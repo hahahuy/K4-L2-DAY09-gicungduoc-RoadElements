@@ -1,1 +1,2 @@
 time,asker,question,answered_how,guideline_change
+14:20,Hoa Thanh Que,Hàng thò ra bị xe khác che một phần có vẽ tới hết mép ảnh không?,Chỉ vẽ phần nhìn thấy và tick needs_review=true,Bổ sung quy tắc occlusion cho blind set v3
