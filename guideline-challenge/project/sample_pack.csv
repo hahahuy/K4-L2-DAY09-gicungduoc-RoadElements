@@ -1,1 +1,16 @@
 sample_id,split,tags,reason
+BDD02,blind,normal,Ngã tư ban ngày nhiều đầu đèn quay mặt ego đang xanh; ca normal của blind
+BDD07,blind,edge;ambiguity,Ngã tư nhiều đầu đèn; dễ gán relevance ego cho đèn của đường cắt ngang
+BDD11,blind,edge,Một đầu đèn đỏ ở góc phải; không đủ bằng chứng để mặc định relevance ego
+BDD18,blind,critical;low_visibility;ambiguity,Đêm: đèn đỏ gần đọc được còn chấm xanh xa không có vỏ; phải tag cả ảnh
+BDD25,blind,edge;low_visibility,Chạng vạng đường ướt: đèn xa thật lẫn phản chiếu xanh trên mặt đường
+LISA16,example,edge;temporal,Cùng gantry: mũi tên trái vẫn đỏ trong khi đèn giữa và đèn phải đã xanh
+BDD15,example,negative,Cao tốc không có đầu đèn; đèn xe và biển báo không được vẽ
+BDD26,example,critical;low_visibility,Đêm có đèn xanh gần và đèn đỏ xa hơn; dạy relevance unknown khi không thấy hướng mặt đèn
+BDD09,example,negative,Cao tốc ban ngày không có đèn tín hiệu; kiểm tra không vẽ đèn hậu xe
+LISA01,calibration,temporal;critical,Cùng ngã tư với LISA16 nhưng mọi đầu đèn còn đỏ; cấm copy state từ frame example
+BDD20,calibration,small_far;ambiguity,Đầu đèn rất nhỏ ở cuối đường; thử ngưỡng 8 px
+BDD17,calibration,low_visibility;ambiguity,Mưa và kính ướt; thử ngưỡng tag image_escalate
+BDD12,calibration,edge;conflict,Công trường và đèn hiệu cửa hàng; không có vỏ đèn 3 bóng nhưng dễ bị vẽ nhầm
+BDD04,calibration,edge;negative,Biển vàng cảnh báo người đi bộ không phải đầu đèn
+BDD22,calibration,low_visibility,Chạng vạng trên cao tốc; chấm sáng xa dễ bị đoán thành đèn xanh

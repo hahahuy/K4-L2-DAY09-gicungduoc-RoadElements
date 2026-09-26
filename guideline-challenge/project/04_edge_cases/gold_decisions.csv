@@ -1,1 +1,15 @@
 sample_id,decision_id,expected,severity,rationale
+BDD02,d1,"label=traffic_light on each front-facing head with a visible housing: state=green; direction=round; relevance=ego; needs_review=false; no image_escalate tag",major,Ngã tư ban ngày đèn đối diện ego đang xanh. Sai relevance hoặc thêm tag làm planner dừng oan hoặc đẩy ca dễ vào hàng review.
+BDD02,d2,"geometry: each box hugs one signal housing and excludes the mast arm and pole; edge error within 3 px",minor,Mục 3. Box gộp tay đòn làm kích thước đèn sai nhưng không đổi lệnh dừng/đi nên minor.
+BDD07,d1,"relevance=ego only for heads that face the ego approach; heads for the cross street are relevance=cross; if the controlled movement is unclear then relevance=unknown and needs_review=true. Do not mark every red or green head as ego",critical,Ngã tư nhiều đầu đèn. Gán cross-street thành ego khiến xe dừng nhầm hoặc bỏ qua đèn của làn mình.
+BDD07,d2,"state is the lit lamp of that same head only; do not copy state from a neighbor; an unreadable lamp is state=unknown with needs_review=true",major,Các đầu đèn cùng ngã tư có thể khác pha. Copy state làm sai lệnh đi/dừng trên đúng làn.
+BDD07,d3,"geometry: one box per head; housing only; boxes on the same mast do not cover the horizontal arm",minor,Mục 3. Tách đầu đèn để attribute không bị gộp.
+BDD11,d1,"the visible red head is state=red and direction=round; relevance=unknown; needs_review=true. Do not set relevance=ego",critical,Đèn đỏ ở góc phải không chứng minh nó điều khiển làn ego. Mặc định ego tạo cú dừng sai; mặc định cross có thể cho ego vượt đèn của chính mình.
+BDD11,d2,"no traffic_light box on street-name signs vehicle brake lamps or the yellow warning sign",major,Ảnh có biển và đèn xe. Vẽ chúng thành đèn làm planner đọc một pha không tồn tại.
+BDD11,d3,"geometry: the red head box covers the housing only and does not run down the pole",minor,Mục 3. Cột không thuộc vỏ đèn.
+BDD18,d1,"the readable near red head is state=red; relevance=unknown; needs_review=true",critical,Đêm không thấy đầu đèn đó quay về lối nào. Chốt ego hoặc cross đều có thể đảo quyết định dừng/đi.
+BDD18,d2,"no box on color blobs that have no visible housing; image_escalate tag is present",major,Chấm xanh xa không có vỏ phải bỏ. Quá nửa ứng viên không đọc được nên phải tag cả ảnh dù đầu đèn gần vẫn được vẽ.
+BDD18,d3,"geometry: the near red box height equals the housing not the pole",minor,Mục 3. Kéo box theo cột đèn là sai hình học.
+BDD25,d1,"no traffic_light box on green or red reflections on the wet pavement",critical,Phản chiếu đúng màu đèn. Nhận thành đầu đèn ego khiến planner đi hoặc dừng theo một vệt trên mặt đường.
+BDD25,d2,"distant heads that show a housing are labeled; street lamps and vehicle lights are not labeled; image_escalate is absent unless more than half of housings at least 8 px tall have state=unknown",major,Đường ướt lúc chạng vạng vẫn có đầu đèn thật phía trước. Tag chỉ khi quá ngưỡng unknown chứ không phải vì trời tối.
+BDD25,d3,"geometry: boxes sit on signal housings and do not cover the reflection smear on the road",minor,Mục 3. Vệt phản chiếu không phải vỏ đèn.
