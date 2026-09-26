@@ -6,6 +6,8 @@
 
 Phát hiện hàng hóa cồng kềnh hoặc vật liệu dài nhô rõ phía sau phương tiện trong ảnh dashcam. Tách phần hàng nhô khỏi thân xe để giữ box xe phục vụ ước lượng khoảng cách và biểu diễn vùng va chạm phía sau xe.
 
+[../data/Team-generate/ChatGPT Image Sep 26, 2026, 11_31_19 AM.png]
+
 Chỉ label hàng hóa/vật liệu được gắn, buộc hoặc chở trên ô tô, xe tải hoặc xe máy và nhô phía sau thân xe, ước lượng trên 20 cm. Với ảnh tĩnh, dùng ngưỡng nhìn thấy thay thế: phần nhô dài ít nhất 15 px **hoặc** ít nhất 12% chiều dài visible box của xe theo trục trước--sau. Chỉ label khi nhìn rõ xe gốc, phần hàng nhô và quan hệ giữa chúng.
 
 Ngoài scope: cửa/cốp/bửng mở, vật nhô sang hai bên hoặc phía trước, ô/dù, gương/cản/bánh xe bình thường, hàng nằm hoàn toàn trong xe, người đi bộ, vật thể trên đường, vật thể nền, bóng và phản chiếu.
@@ -34,6 +36,8 @@ Sử dụng visible rectangle/bounding box.
 
 Sai lệch tối đa 2 px mỗi cạnh ở ảnh gốc được chấp nhận. Không gộp `Vehicle` và `Attached_Hazard` thành một box lớn.
 
+![Image 2 - Tách Vehicle và Attached_Hazard](../data/guideline-pic/exampleGoodLabel.png)
+
 ## 4. Taxonomy
 
 ### `Vehicle`
@@ -50,6 +54,8 @@ Rectangle cho hàng hóa/vật liệu nhô phía sau. Không có subtype hoặc 
 
 Không có `Attached_Hazard` không liên kết: nếu không xác định được xe cha, `IGNORE` candidate đó và không tạo box hazard.
 
+![Image 3 - Hai Attached_Hazard cùng một xe](../data/guideline-pic/2hazard.png)
+
 Không sử dụng `UNKNOWN`, `certainty`, `hazard_type`, `review_region` hoặc attribute ngoài contract này.
 
 ## 5. Inclusion / exclusion
@@ -64,12 +70,22 @@ Không tạo annotation cho xe không có hàng nhô phía sau; hàng nhô dư�
 
 Khi bằng chứng không đủ, không suy đoán và không tạo box `Vehicle` hay `Attached_Hazard`.
 
+![Image 4 - Candidate ngoài scope: IGNORE](../data/guideline-pic/IgnoreTrue.png)
+
+![Image 5 - Cửa mở là ngoài scope: IGNORE](../data/guideline-pic/DoorOpeninig.png)
+
 ## 6. Visibility / occlusion
 
 - Bị che một phần: chỉ label nếu vẫn nhận biết rõ hàng gắn phía sau xe; box chỉ theo phần nhìn thấy.
 - Bị cắt mép ảnh: label nếu phần nhìn thấy đủ xác định object và quan hệ với xe; box dừng ở mép ảnh.
 - Quá nhỏ, mờ, ngược sáng hoặc không phân biệt được boundary: `IGNORE`.
 - Chỉ xuất hiện qua gương/kính hoặc phản chiếu: `IGNORE`.
+
+![Image 6 - Hazard bị che: chỉ label nếu quan hệ với xe vẫn rõ](../data/guideline-pic/hazardHidden.png)
+
+![Image 7 - Candidate quá nhỏ: IGNORE](../data/guideline-pic/hazardSuperLittle.png)
+
+![Image 8 - Ảnh tối hoặc mờ, không đủ bằng chứng: IGNORE](../data/guideline-pic/blur-Dark.png)
 
 ## 7. Ambiguity / escalation
 
