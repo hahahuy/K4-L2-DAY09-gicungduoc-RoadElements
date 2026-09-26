@@ -14,3 +14,8 @@ Tên: German Traffic Sign Detection Benchmark (GTSDB) — FullIJCNN2013.zip
 Giấy phép: ReadMe.txt: 'You are free to use this data package for any purpose you like'; trích dẫn paper nếu công bố.
 Trích dẫn: Houben et al., Detection of Traffic Signs in Real-World Images: The German Traffic Sign Detection Benchmark, IJCNN 2013
 Trang chủ: https://benchmark.ini.rub.de/gtsdb_dataset.html
+
+Tên: Dữ liệu Overhang
+Giấy phép: N/A
+Trích dẫn: N/A
+Trang chủ: Ảnh do AI tạo (nhóm gicungduoc)
