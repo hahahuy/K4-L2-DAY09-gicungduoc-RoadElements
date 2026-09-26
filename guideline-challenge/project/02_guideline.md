@@ -1,375 +1,128 @@
+# Annotation guideline — Phần nhô nguy hiểm: hàng thò ra, hàng cồng kềnh, cửa xe mở
 
-# Annotation guideline — Boundary & Occlusion Edge-cases for Vehicle Hazards
+**Version:** v1
 
-**Version:** v0
-
-> DRAFT — Bản này dùng để nhóm thống nhất cách gắn nhãn trước khi tạo guideline v1.
-> Các rule về boundary, taxonomy và uncertainty chưa được freeze.
-> Sau khi nhóm review và thống nhất, đổi Version thành v1.
-
----
+<!--
+v1 = bản nháp đầu. Sau calibration đổi thành v2, sau blind handoff đổi thành v3; mỗi lần ghi một dòng vào
+08_revision_log.md. Peer chỉ nhận file này: rule nào không có ở đây thì coi như không tồn tại.
+-->
 
 ## 1. Objective + scope
 
-### Mục tiêu
+Dữ liệu dùng cho hai việc: (1) phát hiện xe và ước lượng **kích thước chuẩn** của xe; (2) cho biết **không gian bị
+chiếm thêm** bởi phần nhô ra. Vì vậy **không bao giờ vẽ một box to bao cả xe lẫn phần nhô**. Luôn vẽ **2 box riêng
+có liên kết**: `vehicle` cho thân xe, `attached_hazard` cho phần nhô.
 
-Task tập trung vào các phương tiện có phần nhô hoặc phần mở ra ngoài thân xe,
-có thể làm tăng vùng chiếm chỗ thực tế của phương tiện.
-
-Các trường hợp nhóm muốn nghiên cứu:
-
-- Xe tải chở sắt/thép/gỗ hoặc hàng hóa nhô ra phía trước, phía sau hoặc hai bên.
-- Xe máy chở hàng cồng kềnh.
-- Ô tô/van/truck có cửa đang mở.
-- Phần hàng hóa hoặc vật thể gắn với xe bị che khuất một phần.
-- Vật thể nằm gần xe nhưng không rõ có thực sự thuộc về xe hay không.
-
-### Câu hỏi chính của guideline
-
-Khi vehicle có phần nhô nguy hiểm, annotator nên:
-
-- vẽ 1 bounding box lớn bao cả vehicle và phần nhô,
-
-hay
-
-- vẽ riêng bbox `vehicle` và bbox `attached_hazard`?
-
-### Hướng dự kiến của nhóm ở v0
-
-Nhóm đang nghiêng về phương án:
-
-- `vehicle`: bbox riêng cho thân phương tiện;
-- `attached_hazard`: bbox riêng cho phần nhô nguy hiểm.
-
-Lý do cần kiểm chứng qua calibration:
-nếu gộp hazard vào bbox vehicle, kích thước bbox của vehicle có thể bị thay đổi lớn.
-
-### Ngoài scope dự kiến
-
-- Người đi bộ.
-- Biển báo.
-- Vạch đường.
-- Vật thể không liên quan nằm gần xe.
-- Bóng đổ.
-- Reflection.
-- Các bộ phận bình thường của xe không tạo ra phần nhô bất thường.
-
----
+Trong scope: ô tô, xe tải, bus, xe máy, xe ba gác/xe đẩy hàng, xe đạp; phần nhô = hàng/vật liệu thò ra, hàng cồng
+kềnh vượt bề ngang xe, cửa xe đang mở. Không vẽ: gương chiếu hậu, hàng chất cao nhưng không thò ra khỏi mép, người
+bước xuống xe, phản chiếu.
 
 ## 2. Annotation unit
 
-Task sử dụng ảnh tĩnh.
-
-Đơn vị annotation dự kiến là từng object instance trong mỗi ảnh.
-
-Hai loại instance đang được xem xét:
-
-1. `vehicle`
-2. `attached_hazard`
-
-Một phương tiện được tính là một instance `vehicle`.
-
-Một phần nhô nguy hiểm được tính là một instance `attached_hazard`
-nếu có đủ bằng chứng cho thấy nó liên quan trực tiếp tới vehicle.
-
-### Câu hỏi cần chốt trước v1
-
-- Một cụm nhiều thanh thép nhô cùng hướng sẽ là một hazard hay nhiều hazard?
-- Hai phần hàng nhô tách biệt có cần hai bbox riêng không?
-- Cửa xe mở có được coi là `attached_hazard` giống hàng hóa hay cần class riêng?
-
----
+- Đơn vị là **một ảnh tĩnh**.
+- **Một xe = một box `vehicle`.** Xe máy/xe đạp/xe ba gác: box gồm cả người lái. Xe tải kéo rơ-moóc: đầu kéo và
+  rơ-moóc là **một** box.
+- **Một phần nhô liền khối = một box `attached_hazard`.** Hàng thò ra ở **hai phía khác nhau** (ví dụ thò cả trước và
+  sau) là **hai** box hazard. Nhiều thanh sắt bó chung thò ra cùng một phía là **một** box.
+- Mỗi box `attached_hazard` gắn với **đúng một** xe.
 
 ## 3. Geometry rule
 
-Geometry dự kiến:
+Công cụ: **Rectangle**, chế độ **Shape**.
 
-**Rectangle / Bounding Box**
+**Box `vehicle` = đường bao chuẩn của xe** (như lúc xe không chở gì và mọi cửa đóng):
+- Ô tô/xe tải/bus: ôm thân xe + thùng xe, **gồm** gương chiếu hậu, **không gồm** hàng thò ra ngoài mép thùng và
+  **không gồm** cánh cửa đang mở ra ngoài thân.
+- Xe máy/xe đạp/xe ba gác: ôm xe + người lái + phần hàng **nằm trong** bề ngang tay lái và chiều dài xe.
+- Bị che: ôm phần nhìn thấy, không đoán phần bị khuất.
 
-### Vehicle
+**Box `attached_hazard` = chỉ phần nằm NGOÀI box `vehicle`:**
+- Bắt đầu từ mép box xe (chạm hoặc chồng ≤ 5 px) và kéo tới **điểm xa nhất** của phần nhô.
+- Chiều còn lại ôm sát vật nhô. Ví dụ bó sắt thò sau thùng: box hazard cao đúng bằng bó sắt, không cao bằng cả xe.
+- Cửa mở: ôm phần cánh cửa nằm ngoài thân xe, tính từ bản lề tới mép ngoài cửa.
+- Dây buộc, tấm vải phủ lủng lẳng thuộc hàng hoá thì tính vào hazard.
 
-Bbox dự kiến ôm phần thân chính của phương tiện.
+**Ngưỡng vẽ hazard** — đo phần nhô theo cùng chiều với xe (chiều dài nếu thò trước/sau, bề ngang nếu thò hai bên):
+- Nhô **≥ 12%** kích thước xe **hoặc ≥ 15 px** (chỉ cần đạt một trong hai) → **vẽ** hazard.
+- Nhô **8–12%** và < 15 px → **vẽ** hazard + tick `needs_review` (xem §7).
+- Nhô **< 8%** và < 15 px → **không vẽ** hazard; box xe vẫn **không** gồm phần đó.
 
-Ở v0, nhóm chưa freeze việc bbox sẽ:
-
-- chỉ theo phần nhìn thấy;
-- hay suy đoán phần bị che.
-
-Hướng ưu tiên hiện tại:
-
-**visible bounding box** — không đoán phần bị che hoàn toàn.
-
-### Attached hazard
-
-Bbox dự kiến ôm phần vật thể nhô ra ngoài thân xe.
-
-Rule cần kiểm chứng:
-
-- Có chỉ bbox phần nhô ra ngoài hay bbox toàn bộ cargo?
-- Hazard và vehicle có được overlap bbox hay không?
-- Khi boundary giữa cargo và vehicle khó thấy thì xử lý thế nào?
-
-### Rule đang được đề xuất
-
-Không kéo bbox `vehicle` để bao toàn bộ phần hazard.
-
-Thay vào đó:
-
-    [ vehicle ] + [ attached_hazard ]
-
-Rule này chưa freeze ở v0 và sẽ được kiểm tra bằng calibration.
-
----
+Tolerance: mỗi cạnh lệch ≤ 3 px là đạt; vật cao < 40 px thì lệch ≤ 10% chiều cao là đạt.
 
 ## 4. Taxonomy
 
-Taxonomy dự kiến:
+Class: `vehicle`, `attached_hazard` (rectangle), `image_escalate` (tag). Mọi dropdown mặc định `__undefined__`:
+**bắt buộc chọn**, còn `__undefined__` trong export là lỗi.
 
-### Label 1 — `vehicle`
-
-Dùng cho thân phương tiện.
-
-Có thể có attribute:
-
-`vehicle_type`
-
-Giá trị dự kiến:
-
-- car
-- truck
-- bus
-- motorcycle
-- other
-- unknown
-
-### Label 2 — `attached_hazard`
-
-Dùng cho phần nhô/mở bất thường.
-
-Attribute dự kiến:
-
-`hazard_type`
-
-Giá trị:
-
-- cargo_overhang
-- oversized_load
-- open_door
-- other
-- unknown
-
-Có thể thêm:
-
-`certainty`
-
-Giá trị:
-
-- clear
-- uncertain
-
-### Chưa chốt ở v0
-
-Nhóm cần quyết định trước v1:
-
-- Có cần label riêng cho `open_door` hay chỉ dùng attribute?
-- Có cần một label/tag riêng để đánh dấu trường hợp cần review không?
-- `unknown` dùng cho unknown subtype hay dùng cho cả trường hợp chưa chắc object có phải hazard?
-
-Taxonomy cuối cùng phải khớp với:
-
-`03_ontology_and_cvat_setup.md`
-
-và:
-
-`03_cvat_labels.json`
-
----
+| Label | Attribute | Giá trị | Chọn khi |
+|---|---|---|---|
+| `vehicle` | `vehicle_type` | `car`, `truck`, `bus`, `motorcycle`, `bicycle`, `cart` (xe ba gác/xe đẩy), `unknown` | Loại xe |
+| | `has_hazard` | checkbox | Luôn tick (vì chỉ vẽ xe có hazard); để trống là lỗi quên liên kết |
+| | `occluded` | checkbox | Xe bị vật khác che > 30% |
+| | `truncated` | checkbox | Xe bị mép ảnh cắt |
+| `attached_hazard` | `hazard_type` | `protruding_load` | Hàng/vật liệu dài (sắt, ống, gỗ, tre) thò ra ngoài thân/thùng |
+| | | `oversized_cargo` | Khối hàng to (thùng, bao, tủ, kính) vượt bề ngang/chiều dài xe máy, xe ba gác |
+| | | `open_door` | Cửa bên, cốp, cửa sau thùng xe đang mở ra ngoài thân |
+| | | `other` | Nhô nguy hiểm nhưng không thuộc 3 loại trên |
+| | `side` | `front`, `rear`, `left`, `right` | Phía nhô ra so với **thân xe** (không phải so với camera). Nhô chéo thì chọn phía nhô **xa hơn** |
+| | `needs_review` | checkbox | Không chắc có vượt ngưỡng, không chắc thuộc xe nào, hoặc không chắc cửa đang mở |
 
 ## 5. Inclusion / exclusion
 
-### Dự kiến INCLUDE
+**Bắt buộc:**
+1. Vẽ `vehicle` **chỉ** cho xe có ít nhất một hazard được vẽ theo §3. Xe **không** có hazard thì **không vẽ**, kể cả
+   xe to, gần hay che mất một phần hazard.
+2. Vẽ `attached_hazard` cho mọi phần nhô ≥ ngưỡng §3.
+3. **Liên kết** hazard với xe của nó:
+   - Bấm **G** (hoặc nút **Group shapes** ở thanh công cụ trái) để vào chế độ nhóm, click box xe rồi click box
+     hazard, bấm **G** lần nữa để hoàn tất → hai box thành một **Group**. Kiểm tra: sidebar phải, mục
+     **Appearance → Color by: Group**, hai box phải cùng màu.
+   - Tick `has_hazard` trên box xe.
+   - Hazard không có Group, hoặc xe có hazard mà `has_hazard=false`, là lỗi.
 
-Annotate vehicle/hazard nếu:
-
-- Nhìn thấy rõ phương tiện.
-- Có vật thể nhô đáng kể ra ngoài thân xe.
-- Hàng hóa lớn hơn boundary thông thường của vehicle.
-- Cửa xe đang mở ra ngoài.
-- Hazard bị che một phần nhưng vẫn nhận biết được.
-
-### Dự kiến EXCLUDE
-
-Không coi các object sau là attached hazard:
-
-- Gương chiếu hậu thông thường.
-- Bánh xe.
-- Cản xe bình thường.
-- Bóng đổ.
-- Reflection.
-- Một vehicle khác đứng sát.
-- Vật thể nằm gần xe nhưng không có bằng chứng liên quan.
-
-### Điểm cần calibration
-
-Khái niệm:
-
-**"nhô đáng kể"**
-
-chưa có threshold định lượng ở v0.
-
-Nhóm cần xem ảnh thực tế để quyết định có cần threshold rõ hơn hay chỉ cần rule định tính.
-
----
+**Không vẽ hazard:** hàng chất cao nhưng không thò ra khỏi mép trước/sau/bên; hàng nằm gọn trong thùng; gương chiếu
+hậu; bạt phủ ôm sát thùng; cửa đóng; người đứng cạnh xe.
 
 ## 6. Visibility / occlusion
 
-### Occlusion một phần
-
-Hướng dự kiến:
-
-Nếu vẫn nhận biết được object:
-
-→ vẫn annotation.
-
-Nếu không nhìn thấy đầy đủ boundary:
-
-→ không tự suy đoán quá mức phần bị che.
-
-### Truncated bởi mép ảnh
-
-Nếu object bị cắt bởi mép ảnh nhưng vẫn nhận biết được:
-
-→ dự kiến vẫn annotation.
-
-BBox kết thúc ở mép ảnh.
-
-### Object nhỏ / xa
-
-Nếu object quá nhỏ để phân biệt rõ:
-
-→ chưa quyết định LABEL / IGNORE / UNKNOWN ở v0.
-
-Cần calibration để thống nhất.
-
-### Reflection
-
-Dự kiến:
-
-→ không annotation reflection như object thật.
-
----
+- Phần nhô bị xe khác che một phần: vẽ phần nhìn thấy, tick `needs_review` nếu không thấy điểm xa nhất.
+- Thấy phần nhô nhưng **không thấy xe chở nó** (xe bị che gần hết): vẫn vẽ `attached_hazard`, không có Group, tick
+  `needs_review`. Đây là trường hợp duy nhất hazard được phép không có Group.
+- Ban đêm/ngược sáng: chỉ vẽ khi phân biệt được đường viền vật nhô.
+- Xe máy chở hàng trong đám đông xe máy: đánh giá từng xe; hàng che người lái vẫn tính vào hazard phần vượt bề ngang.
 
 ## 7. Ambiguity / escalation
 
-Ở v0, nhóm xác định có bốn loại quyết định cần guideline v1 làm rõ:
-
-### LABEL
-
-Khi đủ bằng chứng object thuộc scope.
-
-### IGNORE
-
-Khi đủ bằng chứng object không thuộc scope.
-
-### UNKNOWN
-
-Khi chắc chắn đây là object thuộc scope nhưng không xác định được subtype hoặc attribute.
-
-Ví dụ dự kiến:
-
-- chắc chắn là cargo hazard,
-- nhưng không biết nên gọi là `cargo_overhang` hay `oversized_load`.
-
-### ESCALATE
-
-Khi evidence không đủ để biết có nên label hay không.
-
-Ví dụ:
-
-- một vật dài nằm phía sau truck;
-- vị trí tiếp xúc với truck bị che;
-- không thể biết đó là cargo của truck hay object phía sau.
-
-### Việc phải chốt trước v1
-
-Cần quyết định cách biểu diễn ESCALATE trong CVAT, ví dụ:
-
-- attribute;
-- tag;
-- hoặc label review riêng.
-
-Quyết định này phải xuất hiện được trong CVAT export,
-không chỉ ghi chú hoặc nói miệng.
-
----
+| Tình huống | Quyết định | Thể hiện trong CVAT |
+|---|---|---|
+| Nhô rõ ràng ≥ ngưỡng | LABEL | `vehicle` + `attached_hazard` + Group + `has_hazard` |
+| Hàng không thò ra khỏi mép | IGNORE | Không vẽ gì cho xe này |
+| Nhô < 8% và < 15 px | IGNORE | Không vẽ gì cho xe này |
+| Nhô 8–12% và < 15 px (sát ngưỡng) | ESCALATE object | **Vẽ** `vehicle` + hazard + Group + `needs_review` (nghiêng về vẽ vì bỏ sót nguy hiểm hơn) |
+| Nhô rõ nhưng không nhận ra loại | UNKNOWN | `hazard_type=other` + `needs_review` |
+| Cửa hé, không chắc đang mở hay chỉ là khe cửa | ESCALATE object | Vẽ `open_door` + `needs_review` |
+| Không xác định được hazard thuộc xe nào | ESCALATE object | Vẽ hazard, Group với xe **gần nhất** theo chiều sâu, tick `needs_review` |
+| Cả ảnh quá tối/nhoè | ESCALATE ảnh | Tag `image_escalate`, vẫn vẽ các trường hợp rõ |
 
 ## 8. Temporal rule
 
-**Không áp dụng — task ảnh tĩnh.**
+Không áp dụng — task ảnh tĩnh. Không suy đoán cửa "sắp mở" hay hàng "sắp rơi".
 
-Không sử dụng thông tin của frame trước hoặc sau.
+## 9. Examples
 
-Mỗi ảnh được annotation độc lập.
+| sample_id | Thấy gì | Expected output | Rule áp dụng |
+|---|---|---|---|
+| OVH01 | Xe tải phía trước chở bó sắt thép thò ra sau thùng | `vehicle truck has_hazard=true` ôm thân + thùng; `attached_hazard protruding_load side=rear` từ mép sau thùng tới đầu bó sắt; hai box cùng Group | §3 box xe chuẩn, §5 liên kết |
+| OVH02 | Ô tô đỗ ven đường, cửa tài xế mở về phía lòng đường | `vehicle car has_hazard=true` theo thân xe đóng cửa; `attached_hazard open_door side=left` (hoặc `right` tuỳ phía cửa của xe) ôm cánh cửa ngoài thân; Group | §3 cửa mở, §4 side theo thân xe |
+| OVH03 | Xe máy chở thùng hàng rộng hơn tay lái | `vehicle motorcycle has_hazard=true` ôm xe + người + phần hàng trong bề ngang tay lái; hai box `oversized_cargo side=left` và `side=right` cho phần vượt ra mỗi bên; Group cả ba | §2 hai phía = hai box |
+| OVH04 | Xe tải chở hàng chất cao nhưng nằm gọn trong thùng | Không vẽ gì cho xe tải này (không `vehicle`, không hazard) | §5 xe không có hazard thì không vẽ |
 
-Không dùng track.
+## 10. Common mistakes
 
----
-
-## 9. Examples / Edge cases cần kiểm chứng
-
-Ở v0 chưa gán `sample_id` thật.
-
-Sau khi chọn ảnh `example` hoặc `calibration`,
-thay `TBD` bằng ID thật như `BDDxx`.
-
-Không sử dụng ảnh `blind` làm ví dụ.
-
-| #  | sample_id | Trường hợp                                                    | Hướng xử lý dự kiến ở v0   | Điều cần kiểm chứng                         |
-| -- | --------- | ---------------------------------------------------------------- | --------------------------------- | ------------------------------------------------ |
-| 1  | TBD       | Xe bình thường, không có phần nhô                         | Chỉ`vehicle`                   | Xác định baseline bbox vehicle                |
-| 2  | TBD       | Xe tải có thanh thép/hàng dài nhô phía sau                | `vehicle` + `attached_hazard` | Hazard bbox chỉ phần nhô hay toàn bộ cargo? |
-| 3  | TBD       | Xe máy chở hàng rộng sang hai bên                           | `vehicle` + `attached_hazard` | Thế nào là "oversized"?                       |
-| 4  | TBD       | Ô tô đang mở cửa                                            | `vehicle` + hazard cho cửa     | Open door có cùng label với cargo không?     |
-| 5  | TBD       | Hazard bị vehicle khác che một phần                          | Vẫn label phần nhìn thấy      | Visible bbox hay amodal bbox?                    |
-| 6  | TBD       | Hazard đi ra ngoài mép ảnh                                   | Bbox đến mép ảnh              | Có cần attribute truncated không?             |
-| 7  | TBD       | Vật dài sát phía sau xe nhưng không thấy điểm gắn      | ESCALATE                          | Cách biểu diễn escalation trong CVAT          |
-| 8  | TBD       | Vật nằm gần vehicle nhưng rõ ràng không gắn với vehicle | IGNORE                            | Có cần lưu dấu quyết định ignore không?  |
-| 9  | TBD       | Chắc chắn có hazard nhưng không biết loại                 | `hazard_type=unknown`           | Phân biệt UNKNOWN và ESCALATE                 |
-| 10 | TBD       | Hai phần hàng nhô tách biệt trên cùng vehicle             | Có thể dùng 2 hazard bbox      | Khi nào split thành instance mới?             |
-
-### 8 edge case tối thiểu của nhóm
-
-Tối thiểu cần giữ các case:
-
-1. Cargo nhô phía sau.
-2. Hàng cồng kềnh hai bên.
-3. Cửa xe mở.
-4. Occlusion.
-5. Truncation ở mép ảnh.
-6. Không rõ object có gắn với vehicle.
-7. Object gần xe nhưng không liên quan.
-8. Nhiều hazard / boundary khó xác định.
-
-Các case này sẽ tiếp tục được đưa vào `edge_case_cards.md`.
-Bài yêu cầu cuối buổi có ít nhất 8 trường hợp khó.
-
----
-
-## 10. Common mistakes — giả thuyết ở v0
-
-Các lỗi nhóm dự đoán annotator có thể mắc:
-
-1. Gộp vehicle và phần nhô vào một bbox duy nhất.
-2. Bbox vehicle quá rộng vì bao luôn cargo.
-3. Bỏ sót cargo nhỏ nhưng nhô rõ ra ngoài.
-4. Coi gương hoặc bộ phận bình thường của xe là hazard.
-5. Coi object nằm gần vehicle là attached hazard.
-6. Đoán boundary của phần bị occluded.
-7. Không label cửa xe đang mở.
-8. Dùng `unknown` cho mọi trường hợp không chắc.
-9. Gộp nhiều hazard tách biệt thành một bbox lớn.
-10. Dùng thông tin từ ảnh/frame khác để suy luận.
-
-Các lỗi này mới là giả thuyết ở v0.
-
-Sau calibration, nhóm sẽ xem lỗi nào thực sự xảy ra để sửa guideline v1/v2.
+1. Vẽ **một box to** bao cả xe lẫn hàng thò ra → sai kích thước xe. Luôn tách hai box.
+2. Box hazard **bao cả xe** hoặc bao cả bó hàng nằm trong thùng → hazard chỉ là phần **nằm ngoài** box xe.
+3. Quên **Group** hoặc quên tick `has_hazard` → liên kết không đọc được trong export.
+4. Chọn `side` theo hướng camera thay vì theo **thân xe** (xe đi ngược chiều: cửa bên trái của xe nằm bên phải ảnh).
+5. Vẽ hazard cho hàng chất cao nhưng không thò ra mép, hoặc vẽ `vehicle` cho xe không có hazard.
+6. Box xe máy không gồm người lái.
+7. Để sót `__undefined__` → quét lại bằng chế độ **Attribute annotation** trước khi lưu.
