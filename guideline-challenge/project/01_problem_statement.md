@@ -2,25 +2,46 @@
 
 ## Bài toán
 
-Phát hiện **hàng hóa cồng kềnh nhô phía sau phương tiện đang lưu thông** trong ảnh đường phố góc nhìn tài xế. Khó khăn chính là tách phần hàng nhô ra khỏi thân xe gốc trong ảnh đơn mà không nhầm với vật thể nền hoặc phần thân xe.
+Khi xe có **phần nhô nguy hiểm** — hàng/vật liệu thò ra ngoài thùng xe tải, hàng cồng kềnh trên xe máy/xe ba gác,
+cửa ô tô đang mở — annotator phải vẽ **box xe theo đúng kích thước thân xe** và **box riêng cho phần nhô**, rồi
+**liên kết** hai box với nhau. Khó ở chỗ ranh giới "đâu là thân xe, đâu là phần nhô" và ngưỡng "nhô bao nhiêu thì
+phải vẽ".
 
 ## Downstream contract
 
-1. **Downstream task / model / user là ai?** Hai nhóm dùng kết quả. Nhóm 3D object detection/depth estimation cần box `Vehicle` ôm sát thân xe nguyên bản để dùng kích thước chuẩn của xe ước lượng khoảng cách. Nhóm motion planning/obstacle avoidance cần `Attached_Hazard` để xác định không gian chiếm dụng thực tế và vùng va chạm phía sau xe khi bám đuôi.
-2. **Output annotation nào thực sự cần?** Mỗi xe có hàng hóa nhô rõ ràng phía sau được vẽ một box `Vehicle` chỉ cho thân xe gốc và một box `Attached_Hazard` ôm sát khối hàng nhô. Nếu nhiều kiện hàng tạo thành một khối nhô liên tục, dùng một box gộp. Trên `Attached_Hazard`, chỉ ghi `Parent_ID` của `Vehicle` gốc. Hazard luôn là hàng cồng kềnh nhô phía sau, nên không cần thuộc tính loại hoặc hướng.
-3. **Failure nào gây hậu quả lớn nhất?** Critical nhất là bỏ sót `Attached_Hazard` (false negative): hệ thống coi vùng nguy hiểm phía sau xe là khoảng trống và có thể va chạm. Major là gộp cả xe và phần hàng vào một box `Vehicle`, làm sai kích thước/quỹ đạo xe. Major nữa là thiếu `Parent_ID`, khiến hệ thống hiểu nhầm phần hàng là chướng ngại tĩnh thay vì di chuyển cùng xe.
-4. **Khi ambiguity không resolve được, ai / ở đâu là escalation path?** Chỉ label khi nhìn rõ xe gốc, khối hàng nhô phía sau, và quan hệ gắn giữa chúng. Nếu không phân biệt được với vật thể nền, vật thể trong xe hoặc phần thân xe thì `IGNORE`; không tạo nhãn suy đoán. Chỉ tạo Issue trên CVAT bằng *Open an issue* khi case được chọn để QA/Lead thảo luận, theo mẫu: `[Frame #<n> - Object #<id>] Không rõ <lý do>. Đã IGNORE theo rule bằng chứng không đủ.` QA/Project Lead quyết định và đóng issue.
+1. **Downstream task / model / user là ai?** (a) Detector + bộ ước lượng kích thước/theo dõi xe: cần box xe có kích
+   thước **chuẩn** (không bị phình vì hàng hoặc cửa). (b) Module lập kế hoạch đường đi (planner): cần biết **không
+   gian bị chiếm thêm** bởi phần nhô để giữ khoảng cách an toàn.
+2. **Output annotation nào thực sự cần?** Box `vehicle` (kèm `vehicle_type`, `has_hazard`), box `attached_hazard`
+   (kèm `hazard_type`, `side`), **liên kết** hazard ↔ vehicle bằng Group của CVAT, và `needs_review` / tag
+   `image_escalate` để escalate.
+3. **Failure nào gây hậu quả lớn nhất?** **Bỏ sót phần nhô** ở xe trong hoặc sát làn xe mình (ego) — ví dụ sắt thép
+   thò sau xe tải phía trước, cửa ô tô mở về phía lòng đường. Planner sẽ tính sai khoảng trống và có thể đâm vào.
+   Đây là decision `critical`. Gộp phần nhô vào box xe (làm phình kích thước xe) là `major`.
+4. **Khi ambiguity không resolve được, ai / ở đâu là escalation path?** Annotator vẫn vẽ box hazard khi nghi ngờ và
+   tick `needs_review`. Nếu cả ảnh không xác định được (quá tối, bị che quá nhiều) thì thêm tag `image_escalate`. QA
+   owner xử lý theo `05_qa_plan.md`.
 
 ## Scope
 
-- **Trong scope (bắt buộc label):** Hàng hóa cồng kềnh hoặc vật liệu dài gắn với xe ô tô, xe tải hoặc xe máy và nhô rõ ràng phía sau thân xe, ước lượng trên 20 cm. Chỉ label khi nhìn thấy đồng thời xe gốc, phần hàng nhô và quan hệ gắn giữa chúng.
-- **Ngoài scope (ignore):** Cửa/cốp/bửng mở, vật nhô hai bên xe, gương chiếu hậu tiêu chuẩn, ô/dù, vật thể nằm hoàn toàn trong thùng/khoang xe, người đi bộ, vật thể nền như biển báo/cây/thùng rác, và mọi vật thể không đủ bằng chứng là hàng gắn với xe.
-- **Geometry tolerance:** Bounding box theo phần nhìn thấy, ôm sát biên ngoài của thân xe hoặc phần nhô; không bao gồm nền/không khí không thuộc vật thể. Sai lệch tối đa 2 px mỗi cạnh ở ảnh gốc được chấp nhận.
+- **Trong scope:** ô tô, xe tải, bus, xe máy, xe ba gác/xe đẩy hàng, xe đạp. Phần nhô gồm: hàng/vật liệu thò ra ngoài
+  thân/thùng xe (trước, sau, hai bên), hàng cồng kềnh vượt bề ngang xe máy/xe ba gác, cửa xe (cửa bên, cốp, cửa sau
+  xe tải) đang mở ra ngoài thân xe.
+- **Ngoài scope (không vẽ):** hàng chất cao trên nóc/thùng nhưng **không** thò ra khỏi mép trước/sau/bên; gương chiếu
+  hậu; người bước xuống xe; phản chiếu; xe trong ảnh quảng cáo.
+- **Geometry tolerance:** mỗi cạnh box lệch ≤ 3 px là đạt; vật cao < 40 px thì lệch ≤ 10% chiều cao là đạt. Box
+  `attached_hazard` phải **chạm hoặc chồng ≤ 5 px** lên mép box xe ở phía nhô ra.
 
 ## Output chấm được
 
-Blind test kiểm tra: `LABEL` (hai box đúng class, geometry và `Parent_ID`), `IGNORE` (không tạo box cho background, ngoài scope hoặc bằng chứng không đủ), và `ESCALATE` (Issue CVAT có vùng khoanh và comment khi QA cần chốt case). Class, geometry và `Parent_ID` phải xuất hiện trong CVAT export; escalation được kiểm tra trong Issue Tracker của task.
+LABEL (box `vehicle` + `attached_hazard` đúng loại, đúng phía), IGNORE (không vẽ hazard cho hàng không thò ra),
+UNKNOWN (`hazard_type=other`), ESCALATE (`needs_review=true` hoặc tag `image_escalate`), liên kết (`has_hazard=true`
+trên xe + hai box cùng Group), và decision geometry (box xe không bị phình). Tất cả nằm trong export
+**CVAT for images 1.1**.
 
 ## Dữ liệu và giới hạn
 
-Nguồn ảnh là 26 ảnh dashcam BDD100K có sẵn tại `data/bdd100k/` (1280 x 720), gồm highway, city street và residential, với điều kiện ban ngày, đêm, chạng vạng, mưa và tuyết. Đây là ảnh tĩnh, không có chuỗi frame tương ứng, nên không thể xác nhận chuyển động bằng thời gian; scope chỉ giữ các ca có bằng chứng trực quan rõ ràng. Một số ảnh có thể là negative không có hàng nhô phía sau xe và vẫn được giữ để kiểm tra quyết định `IGNORE`.
+Ảnh `data/` gốc của lab không có cảnh phần nhô; giảng viên cho phép dùng **16 ảnh ngoài** (đường phố Việt Nam do
+nhóm chụp hoặc thu thập hợp pháp), đăng ký vào `data/overhang/` bằng `add_images.py` với sample_id `OVH01`–`OVH16`
+theo danh sách cảnh trong `HUONG_DAN_ANH.md`. Giới hạn: ảnh tĩnh nên không biết cửa đang mở ra hay đóng lại; số ảnh ít
+nên mỗi loại hazard chỉ có 3–5 ảnh.

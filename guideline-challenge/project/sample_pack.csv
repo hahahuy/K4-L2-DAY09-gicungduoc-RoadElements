@@ -1,16 +1,17 @@
 sample_id,split,tags,reason
-BDD02,blind,normal,Ngã tư ban ngày nhiều đầu đèn quay mặt ego đang xanh; ca normal của blind
-BDD07,blind,edge;ambiguity,Ngã tư nhiều đầu đèn; dễ gán relevance ego cho đèn của đường cắt ngang
-BDD11,blind,edge,Một đầu đèn đỏ ở góc phải; không đủ bằng chứng để mặc định relevance ego
-BDD18,blind,critical;low_visibility;ambiguity,Đêm: đèn đỏ gần đọc được còn chấm xanh xa không có vỏ; phải tag cả ảnh
-BDD25,blind,edge;low_visibility,Chạng vạng đường ướt: đèn xa thật lẫn phản chiếu xanh trên mặt đường
-LISA16,example,edge;temporal,Cùng gantry: mũi tên trái vẫn đỏ trong khi đèn giữa và đèn phải đã xanh
-BDD15,example,negative,Cao tốc không có đầu đèn; đèn xe và biển báo không được vẽ
-BDD26,example,critical;low_visibility,Đêm có đèn xanh gần và đèn đỏ xa hơn; dạy relevance unknown khi không thấy hướng mặt đèn
-BDD09,example,negative,Cao tốc ban ngày không có đèn tín hiệu; kiểm tra không vẽ đèn hậu xe
-LISA01,calibration,temporal;critical,Cùng ngã tư với LISA16 nhưng mọi đầu đèn còn đỏ; cấm copy state từ frame example
-BDD20,calibration,small_far;ambiguity,Đầu đèn rất nhỏ ở cuối đường; thử ngưỡng 8 px
-BDD17,calibration,low_visibility;ambiguity,Mưa và kính ướt; thử ngưỡng tag image_escalate
-BDD12,calibration,edge;conflict,Công trường và đèn hiệu cửa hàng; không có vỏ đèn 3 bóng nhưng dễ bị vẽ nhầm
-BDD04,calibration,edge;negative,Biển vàng cảnh báo người đi bộ không phải đầu đèn
-BDD22,calibration,low_visibility,Chạng vạng trên cao tốc; chấm sáng xa dễ bị đoán thành đèn xanh
+OVH01,example,normal,"Xe tải chở sắt thép thò sau thùng: minh hoạ box xe chuẩn + hazard rear + Group"
+OVH02,example,normal,"Ô tô đỗ mở cửa về phía lòng đường: minh hoạ open_door, side theo thân xe"
+OVH03,example,edge,"Xe máy chở thùng hàng rộng hơn tay lái hai bên: minh hoạ hai hazard left/right cùng một xe"
+OVH04,example,negative,"Xe tải chở hàng chất cao nhưng gọn trong thùng: minh hoạ không vẽ hazard"
+OVH05,calibration,edge;ambiguity,"Cửa xe hé mở nhỏ, sát ngưỡng 10%: thử ngưỡng vẽ và needs_review"
+OVH06,calibration,edge;occlusion,"Xe máy chở hàng bị xe khác che một phần: thử vẽ phần nhìn thấy"
+OVH07,calibration,edge,"Xe tải/xe ba gác chở ống hoặc cây dài thò ra phía trước: thử side=front và điểm xa nhất"
+OVH08,calibration,edge,"Ô tô mở cốp sau: thử open_door side=rear và ranh giới thân xe"
+OVH09,calibration,edge;conflict,"Xe ba gác chở hàng cồng kềnh vượt cả chiều dài lẫn bề ngang: thử một hay nhiều box hazard"
+OVH10,calibration,negative;edge,"Hàng chất cao trên nóc/thùng nhưng không thò khỏi mép: thử rule không vẽ hazard"
+OVH11,calibration,low_visibility;edge,"Ban đêm hoặc ngược sáng, hàng thò sau xe: thử rule chỉ vẽ khi thấy đường viền"
+OVH12,blind,normal,"Ô tô đỗ ven đường mở cửa rõ ràng (cảnh khác OVH02)"
+OVH13,blind,edge;conflict,"Xe máy chở hàng cồng kềnh giữa nhiều xe máy khác: thử gắn hazard đúng xe"
+OVH14,blind,edge;occlusion,"Hàng thò ra bị xe khác che một phần, không thấy hết điểm xa nhất"
+OVH15,blind,critical,"Xe tải chở sắt thép/vật liệu dài thò ra ngay phía trước xe mình, trong làn"
+OVH16,blind,ambiguity,"Cửa xe hé hoặc hàng buộc sát mép, khó biết có vượt ngưỡng"

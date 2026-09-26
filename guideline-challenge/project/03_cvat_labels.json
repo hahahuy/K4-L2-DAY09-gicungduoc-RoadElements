@@ -1,29 +1,57 @@
 [
   {
-    "name": "traffic_light",
-    "color": "#F9A825",
+    "name": "vehicle",
+    "color": "#1E88E5",
     "type": "rectangle",
     "attributes": [
       {
-        "name": "state",
-        "mutable": true,
-        "input_type": "select",
-        "default_value": "__undefined__",
-        "values": ["__undefined__", "red", "yellow", "green", "off", "unknown"]
-      },
-      {
-        "name": "relevance",
+        "name": "vehicle_type",
         "mutable": false,
         "input_type": "select",
         "default_value": "__undefined__",
-        "values": ["__undefined__", "ego", "cross", "unknown"]
+        "values": ["__undefined__", "car", "truck", "bus", "motorcycle", "bicycle", "cart", "unknown"]
       },
       {
-        "name": "direction",
+        "name": "has_hazard",
+        "mutable": false,
+        "input_type": "checkbox",
+        "default_value": "false",
+        "values": ["false"]
+      },
+      {
+        "name": "occluded",
+        "mutable": false,
+        "input_type": "checkbox",
+        "default_value": "false",
+        "values": ["false"]
+      },
+      {
+        "name": "truncated",
+        "mutable": false,
+        "input_type": "checkbox",
+        "default_value": "false",
+        "values": ["false"]
+      }
+    ]
+  },
+  {
+    "name": "attached_hazard",
+    "color": "#E53935",
+    "type": "rectangle",
+    "attributes": [
+      {
+        "name": "hazard_type",
         "mutable": false,
         "input_type": "select",
         "default_value": "__undefined__",
-        "values": ["__undefined__", "round", "left", "right", "straight", "pedestrian", "unknown"]
+        "values": ["__undefined__", "protruding_load", "oversized_cargo", "open_door", "other"]
+      },
+      {
+        "name": "side",
+        "mutable": false,
+        "input_type": "select",
+        "default_value": "__undefined__",
+        "values": ["__undefined__", "front", "rear", "left", "right"]
       },
       {
         "name": "needs_review",

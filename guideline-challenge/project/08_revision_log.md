@@ -8,3 +8,4 @@ Cột Version ghi dạng `v1`, `v2`, `v3` — `make status` tìm dòng bảng c�
 
 | Version | Đổi gì | Vì sao | Bằng chứng |
 |---|---|---|---|
+| v1 | Bản nháp đầu: luôn tách `vehicle` (thân xe chuẩn) + `attached_hazard` (chỉ phần nằm ngoài box xe), liên kết bằng Group + `has_hazard`, ngưỡng nhô ≥ 10% hoặc ≥ 15 px, `side` theo thân xe | Downstream cần kích thước xe chuẩn và không gian bị chiếm thêm; gộp một box làm sai cả hai | `01_problem_statement.md`, EC01, EC02 |

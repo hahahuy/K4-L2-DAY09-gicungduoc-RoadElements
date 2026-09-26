@@ -5,8 +5,8 @@
 - **Team:** TODO (ví dụ `team07`)
 - **Nhóm peer test bài của mình:** TODO (cặp A ↔ B; số nhóm lẻ thì ring 3 nhóm A → B → C → A — Lab Coach công bố)
 - **Nhóm mình test bài của:** TODO
-- **Problem family:** TODO (xem README mục "1 · Chọn bài toán")
-- **Nguồn ảnh:** TODO (`bdd100k`, `gtsdb`, `lisa` — chỉ dùng ảnh trong `data/`)
+- **Problem family:** Boundary & occlusion edge-cases — phần nhô nguy hiểm (hàng thò ra, hàng cồng kềnh, cửa xe mở): `vehicle` + `attached_hazard` có liên kết
+- **Nguồn ảnh:** ảnh ngoài được giảng viên cho phép, đăng ký vào `data/overhang/` (`OVH01`–`OVH16`) bằng `add_images.py`
 
 | Thành viên | GitHub | Vai trò chính | File phụ trách |
 |---|---|---|---|
