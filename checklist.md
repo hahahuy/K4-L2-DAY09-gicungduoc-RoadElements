@@ -37,8 +37,8 @@
 | 3.4 | Chạy `add_images.py` đăng ký ảnh vào `data/overhang/` | [add_images.py](file:///d:/vinai-thuc-chien/lab/day9/K4-L2-DAY09-gicungduoc-RoadElements/guideline-challenge/add_images.py) | ✅ | Đã chạy |
 | 3.5 | Ghi nguồn ảnh vào ATTRIBUTION.txt | `ATTRIBUTION.txt` | ✅ | Ảnh do AI tạo |
 | 3.6 | `make pack SPLIT=calibration` gom ảnh | `build/calibration/` | ✅ | Xong (có 7 ảnh) |
-| 3.7 | Tạo task calibration trên CVAT | CVAT localhost:8080 | 🔲 | Mỗi người tạo task riêng |
-| 3.8 | Dán `03_cvat_labels.json` vào task (tab Raw) | CVAT | 🔲 | Kiểm Constructor sau khi dán |
+| 3.7 | Tạo task calibration trên CVAT | CVAT localhost:8080 | ✅ | Hoàn thành chạy trên CVAT Local |
+| 3.8 | Dán `03_cvat_labels.json` vào task (tab Raw) | CVAT | ✅ | Có các 3 label chính : vehicle, hazard_type và image_escalate |
 | 3.9 | Dán `02_guideline.md` vào Guide của task | CVAT | 🔲 | Nút Guide ở góc trên phải |
 | 3.10 | **Điền phiên bản CVAT** | [03_ontology_and_cvat_setup.md](file:///d:/vinai-thuc-chien/lab/day9/K4-L2-DAY09-gicungduoc-RoadElements/guideline-challenge/project/03_ontology_and_cvat_setup.md) L34 | 🔲 | Chạy `py lab9.py cvat` |
 | 3.11 | **Điền tên task calibration** | [03_ontology_and_cvat_setup.md](file:///d:/vinai-thuc-chien/lab/day9/K4-L2-DAY09-gicungduoc-RoadElements/guideline-challenge/project/03_ontology_and_cvat_setup.md) L35 | 🔲 | Ví dụ `gicungduoc-calib-v1-tien` |
