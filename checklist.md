@@ -39,7 +39,7 @@
 | 3.6 | `make pack SPLIT=calibration` gom ảnh | `build/calibration/` | ✅ | Xong (có 7 ảnh) |
 | 3.7 | Tạo task calibration trên CVAT | CVAT localhost:8080 | ✅ | Hoàn thành chạy trên CVAT Local |
 | 3.8 | Dán `03_cvat_labels.json` vào task (tab Raw) | CVAT | ✅ | Có các 3 label chính : vehicle, hazard_type và image_escalate |
-| 3.9 | Dán `02_guideline.md` vào Guide của task | CVAT | ✅ | Thêm tại Task Description  |
+| 3.9 | Dán `02_guideline.md` vào Guide của task | CVAT | ✅ | Thêm tại Task Description của Task  |
 | 3.10 | **Điền phiên bản CVAT** | [03_ontology_and_cvat_setup.md](file:///d:/vinai-thuc-chien/lab/day9/K4-L2-DAY09-gicungduoc-RoadElements/guideline-challenge/project/03_ontology_and_cvat_setup.md) L34 | ✅ | CVAT 2.74.1 tại http://localhost:8080 |
 | 3.11 | **Điền tên task calibration** | [03_ontology_and_cvat_setup.md](file:///d:/vinai-thuc-chien/lab/day9/K4-L2-DAY09-gicungduoc-RoadElements/guideline-challenge/project/03_ontology_and_cvat_setup.md) L35 | 🔲 | Ví dụ `gicungduoc-calib-v1-tien` |
 | 3.12 | **Xác nhận đã dán Guide** | [03_ontology_and_cvat_setup.md](file:///d:/vinai-thuc-chien/lab/day9/K4-L2-DAY09-gicungduoc-RoadElements/guideline-challenge/project/03_ontology_and_cvat_setup.md) L36 | ✅ | Đã có  |
