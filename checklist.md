@@ -41,7 +41,7 @@
 | 3.8 | Dán `03_cvat_labels.json` vào task (tab Raw) | CVAT | ✅ | Đủ 3 label: vehicle, attached_hazard, image_escalate |
 | 3.9 | Dán `02_guideline.md` vào Guide của task | CVAT | ✅ | Thêm tại Task Description của Task  |
 | 3.10 | **Điền phiên bản CVAT** | [03_ontology_and_cvat_setup.md](file:///d:/vinai-thuc-chien/lab/day9/K4-L2-DAY09-gicungduoc-RoadElements/guideline-challenge/project/03_ontology_and_cvat_setup.md) L34 | ✅ | CVAT 2.74.1 tại http://localhost:8080 |
-| 3.11 | **Điền tên task calibration** | [03_ontology_and_cvat_setup.md](file:///d:/vinai-thuc-chien/lab/day9/K4-L2-DAY09-gicungduoc-RoadElements/guideline-challenge/project/03_ontology_and_cvat_setup.md) L35 | 🔲 | Ví dụ `gicungduoc-calib-v1-tien` |
+| 3.11 | **Điền tên task calibration** | [03_ontology_and_cvat_setup.md](file:///d:/vinai-thuc-chien/lab/day9/K4-L2-DAY09-gicungduoc-RoadElements/guideline-challenge/project/03_ontology_and_cvat_setup.md) L35 | ✅ | gicungduoc-calib-v1-tien |
 | 3.12 | **Xác nhận đã dán Guide** | [03_ontology_and_cvat_setup.md](file:///d:/vinai-thuc-chien/lab/day9/K4-L2-DAY09-gicungduoc-RoadElements/guideline-challenge/project/03_ontology_and_cvat_setup.md) L36 | ✅ | Đã có  |
 | 3.13 | **Setup test** - Một thành viên chưa tham gia setup và mở Task | [03_ontology_and_cvat_setup.md](file:///d:/vinai-thuc-chien/lab/day9/K4-L2-DAY09-gicungduoc-RoadElements/guideline-challenge/project/03_ontology_and_cvat_setup.md) L44 | ✅ | Sử dụng Guideline để hiểu rõ Tasks |
 
