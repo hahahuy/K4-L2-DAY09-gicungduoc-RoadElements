@@ -3,8 +3,8 @@
 Điền trước phút 15. Thay mọi placeholder; còn sót thì `make status` báo ở gate G1.
 
 - **Team:** gicungduoc
-- **Nhóm peer test bài của mình:** tự tìm
-- **Nhóm mình test bài của:** tự tìm
+- **Nhóm peer test bài của mình:** Hoa Thanh Que
+- **Nhóm mình test bài của:** Hoa Thanh Que
 - **Problem family:** Boundary & occlusion edge-cases — phần nhô nguy hiểm (hàng thò ra, hàng cồng kềnh, cửa xe mở): `vehicle` + `attached_hazard` có liên kết
 - **Nguồn ảnh:** ảnh ngoài được giảng viên cho phép, đăng ký vào `data/overhang/` (`OVH01`–`OVH16`) bằng `add_images.py`
 
