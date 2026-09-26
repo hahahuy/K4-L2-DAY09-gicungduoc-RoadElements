@@ -33,7 +33,7 @@ Bảng ontology là **source of truth** cho schema CVAT: `03_cvat_labels.json` p
 
 - **Phiên bản CVAT** (`python lab9.py cvat`):  CVAT 2.74.1.
 - **Tên task calibration** (có version guideline): TODO — ví dụ `teamXX-calib-v1-<tên>`
-- **Guide của task đã dán `02_guideline.md`?** TODO (có / chưa)
+- **Guide của task đã dán `02_guideline.md`?** Có.
 - **Nhóm dùng Track hay Shape, vì sao:** Shape. Ảnh tĩnh; Group hoạt động với Shape; export CVAT for images 1.1.
 
 ## Setup test
