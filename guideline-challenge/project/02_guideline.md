@@ -1,6 +1,6 @@
 # Annotation guideline — Phần nhô nguy hiểm của phương tiện (vehicle + attached_hazard)
 
-**Version:** v2
+**Version:** v3
 
 Peer chỉ nhận file này. Rule không viết ở đây thì không tồn tại. Ảnh ví dụ gọi bằng `sample_id` (`OVH01`, `OVH10`, …).
 Schema CVAT dùng đúng tên label và attribute trong file này (`vehicle`, `attached_hazard`, `image_escalate`).
