@@ -1,135 +1,232 @@
-# Annotation guideline — Rear cargo overhang
+# Annotation guideline — Attached Hazard phía sau phương tiện
 
 **Version:** v1
 
+<!--
+v0 = chưa có bản nháp. Đổi dòng Version ở trên thành v1 khi xong bản nháp đầu, v2 sau calibration, v3 sau blind
+handoff; mỗi lần tăng version ghi một dòng vào 08_revision_log.md. `make freeze` đòi v2 trở lên.
+
+File này là thứ nhóm peer nhận nguyên văn trong blind pack và là Guide dán vào CVAT. Peer KHÔNG nhận
+edge_case_cards.md, gold_decisions.csv hay sample_pack.csv. Rule nào peer cần biết phải nằm ở đây.
+No hidden rules: rule chỉ giải thích bằng miệng thì coi như không tồn tại.
+Ví dụ trong guideline chỉ dùng ảnh split example hoặc calibration, không dùng ảnh blind.
+-->
+
 ## 1. Objective + scope
 
-Phát hiện hàng hóa cồng kềnh hoặc vật liệu dài nhô rõ phía sau phương tiện trong ảnh dashcam. Tách phần hàng nhô khỏi thân xe để giữ box xe phục vụ ước lượng khoảng cách và biểu diễn vùng va chạm phía sau xe.
+Mục tiêu là phát hiện hàng hóa cồng kềnh hoặc vật liệu dài nhô phía sau phương tiện
+đang lưu thông trong ảnh đường phố góc nhìn tài xế. Annotation phải tách đúng:
 
-[../data/Team-generate/ChatGPT Image Sep 26, 2026, 11_31_19 AM.png]
+- Thân xe nguyên bản, dùng class `Vehicle`.
+- Khối hàng nhô phía sau, dùng class `Attached_Hazard`.
 
-Chỉ label hàng hóa/vật liệu được gắn, buộc hoặc chở trên ô tô, xe tải hoặc xe máy và nhô phía sau thân xe, ước lượng trên 20 cm. Với ảnh tĩnh, dùng ngưỡng nhìn thấy thay thế: phần nhô dài ít nhất 15 px **hoặc** ít nhất 12% chiều dài visible box của xe theo trục trước--sau. Chỉ label khi nhìn rõ xe gốc, phần hàng nhô và quan hệ giữa chúng.
+Kết quả được dùng cho hai mục đích: ước lượng kích thước và khoảng cách của xe,
+đồng thời xác định phần không gian thực tế bị chiếm dụng phía sau xe để tránh va
+chạm.
 
-Ngoài scope: cửa/cốp/bửng mở, vật nhô sang hai bên hoặc phía trước, ô/dù, gương/cản/bánh xe bình thường, hàng nằm hoàn toàn trong xe, người đi bộ, vật thể trên đường, vật thể nền, bóng và phản chiếu.
+### Trong scope
+
+Chỉ label khi ảnh cho thấy đồng thời cả ba bằng chứng:
+
+1. Có một phương tiện nhận diện được, gồm ô tô, xe tải hoặc xe máy.
+2. Có hàng hóa cồng kềnh hoặc vật liệu dài nhô rõ ràng phía sau thân xe, ước lượng
+   lớn hơn 20 cm.
+3. Có quan hệ trực quan cho thấy phần nhô được gắn, chở hoặc kéo cùng phương tiện.
+
+### Ngoài scope
+
+Không tạo annotation cho:
+
+- Cửa, cốp hoặc bửng xe đang mở nhưng không có hàng hóa nhô ra.
+- Vật nhô sang hai bên xe nhưng không nhô phía sau.
+- Gương chiếu hậu tiêu chuẩn, ô/dù hoặc phụ kiện thông thường của xe.
+- Vật thể nằm hoàn toàn bên trong thùng hoặc khoang xe.
+- Người đi bộ, xe không có hàng nhô phía sau hoặc vật thể nền như biển báo, cây,
+  thùng rác.
+- Mọi vật thể không đủ bằng chứng để kết luận là hàng hóa gắn với xe.
 
 ## 2. Annotation unit
 
-Task là ảnh tĩnh. Mỗi ảnh được xử lý độc lập; không tracking và không dùng thông tin từ ảnh/frame khác.
+Đơn vị annotation là từng instance trong mỗi ảnh tĩnh. Mỗi phương tiện có hàng nhô
+đủ điều kiện tạo hai loại annotation:
 
-Chỉ tạo annotation cho phương tiện có hàng nhô phía sau: một `Vehicle` cho thân xe gốc và một `Attached_Hazard` cho khối hàng nhô. Cụm kiện hàng liên tục hoặc chồng liền nhau được gộp thành một `Attached_Hazard`. Các khối tách biệt rõ ràng được tạo box riêng và dùng cùng `Parent_ID`.
+- Một box `Vehicle` cho thân xe nguyên bản.
+- Một hoặc nhiều box `Attached_Hazard` cho các khối hàng nhô phía sau.
+
+Mỗi phương tiện là một instance riêng. Nếu một phương tiện có nhiều kiện hàng tạo
+thành một khối nhô liên tục hoặc cùng chiếm một vùng phía sau xe, gộp thành một
+`Attached_Hazard`. Nếu các khối tách rời rõ ràng và không thể coi là một khối liên
+tục, tạo một box cho mỗi khối nhưng tất cả phải trỏ về cùng `Parent_ID` của xe.
+
+Không tạo `Vehicle` cho phần hàng, và không tạo `Attached_Hazard` nếu không thể
+xác định phương tiện cha.
 
 ## 3. Geometry rule
 
-Sử dụng visible rectangle/bounding box.
+Sử dụng bounding box dạng rectangle trong CVAT.
 
-### `Vehicle`
+### Box `Vehicle`
 
-- Ôm sát thân xe gốc nhìn thấy, gồm cabin/thùng xe tiêu chuẩn.
-- Không bao gồm hàng hóa nhô phía sau, nền thừa hoặc phần bị che hoàn toàn.
-- Bỏ qua các chi tiết tiêu chuẩn như gương, cản và bánh xe; các chi tiết này không làm mở rộng box xe.
+- Box chỉ bao quanh thân xe nguyên bản, không bao gồm hàng nhô phía sau.
+- Bao gồm toàn bộ phần thân xe nhìn thấy, kể cả phần bị che một phần bởi hàng hóa
+  hoặc vật thể khác nếu vị trí của thân xe có thể xác định chắc chắn.
+- Không mở rộng box vào vùng không khí, nền hoặc vùng chỉ thuộc hàng hóa.
 
-### `Attached_Hazard`
+### Box `Attached_Hazard`
 
-- Ôm sát phần hàng nhô nhìn thấy phía sau xe.
-- Nếu một phần hàng nằm trong thân xe, chỉ box phần vượt ra ngoài boundary thông thường của xe.
-- Không bao gồm thân xe hoặc nền. Nếu bị cắt mép ảnh, box dừng tại mép ảnh.
+- Box bao quanh toàn bộ khối hàng nhô phía sau mà có thể nhìn thấy.
+- Không bao gồm thân xe, giá đỡ hoặc khoảng không giữa xe và hàng nếu các phần đó
+  không phải là hàng hóa.
+- Nếu nhiều kiện hàng chạm nhau hoặc tạo thành một khối nhô liên tục, dùng một box
+  gộp bao sát toàn bộ khối.
 
-Sai lệch tối đa 2 px mỗi cạnh ở ảnh gốc được chấp nhận. Không gộp `Vehicle` và `Attached_Hazard` thành một box lớn.
+### Quy tắc chung
 
-![Image 2 - Tách Vehicle và Attached_Hazard](../data/guideline-pic/exampleGoodLabel.png)
+- Box phải ôm sát biên ngoài của vật thể theo phần nhìn thấy trong ảnh.
+- Không dùng box amodal để suy đoán phần bị che hoặc nằm ngoài ảnh.
+- Nếu vật thể bị cắt bởi mép ảnh, box dừng tại mép ảnh.
+- Sai lệch tối đa chấp nhận được là 2 px trên mỗi cạnh ở ảnh gốc 1280 x 720.
+- Khi không thể đặt box sát một cạnh vì bằng chứng hình ảnh không đủ, dùng
+  `IGNORE`/`ESCALATE` theo mục 7 thay vì đoán.
 
 ## 4. Taxonomy
 
-### `Vehicle`
+Task chỉ có hai class dạng rectangle:
 
-Rectangle cho thân xe gốc. Chỉ tạo khi xe có ít nhất một `Attached_Hazard` hợp lệ.
+| Class | Ý nghĩa | Số lượng mỗi phương tiện |
+|---|---|---|
+| `Vehicle` | Thân xe nguyên bản, không gồm phần hàng nhô | Một |
+| `Attached_Hazard` | Hàng hóa cồng kềnh hoặc vật liệu dài nhô phía sau xe | Một hoặc nhiều nếu các khối tách rời rõ ràng |
 
-### `Attached_Hazard`
+`Attached_Hazard` phải có attribute `Parent_ID`, là mã định danh của box
+`Vehicle` tương ứng trong cùng ảnh. Giá trị phải trỏ duy nhất tới đúng xe cha, ví dụ
+`V01`, `V02`.
 
-Rectangle cho hàng hóa/vật liệu nhô phía sau. Không có subtype hoặc direction vì scope đã cố định là rear cargo overhang.
+Quy tắc đặt ID:
 
-### `Parent_ID`
-
-`Attached_Hazard` bắt buộc có attribute `Parent_ID`: ID của `Vehicle` mà hàng gắn hoặc được chở trên đó. Trong CVAT, nhóm `Vehicle` và các `Attached_Hazard` cùng xe bằng **Group shapes** để kiểm tra trực quan liên kết; mọi hazard trong một group phải có cùng `Parent_ID` của xe cha.
-
-Không có `Attached_Hazard` không liên kết: nếu không xác định được xe cha, `IGNORE` candidate đó và không tạo box hazard.
-
-![Image 3 - Hai Attached_Hazard cùng một xe](../data/guideline-pic/2hazard.png)
-
-Không sử dụng `UNKNOWN`, `certainty`, `hazard_type`, `review_region` hoặc attribute ngoài contract này.
+- Đánh số các xe từ trái sang phải theo vị trí trung tâm của box `Vehicle`, bắt đầu
+  từ `V01`.
+- Mỗi `Attached_Hazard` ghi đúng `Parent_ID` của xe mà nó gắn vào.
+- Nếu CVAT tự sinh số ID khác với quy ước hiển thị, annotator vẫn phải ghi giá trị
+  tham chiếu ổn định theo hướng dẫn của task và kiểm tra lại trong export.
+- Không thêm attribute loại hàng, hướng nhô hoặc mức độ nguy hiểm; các thuộc tính
+  này không thuộc downstream contract.
 
 ## 5. Inclusion / exclusion
 
 ### LABEL
 
-Tạo `Vehicle` và `Attached_Hazard` khi đồng thời có xe gốc xác định được, hàng/vật liệu nhô rõ phía sau trên 20 cm, đạt ngưỡng nhìn thấy ở mục 1, và bằng chứng trực quan đủ cho thấy hàng thuộc xe đó. Nhóm các shape cùng xe trong CVAT và gán `Parent_ID` trước khi hoàn tất.
+Chọn `LABEL` và tạo box cho cả `Vehicle` và `Attached_Hazard` khi:
+
+- Xe gốc nhìn thấy đủ để vẽ box riêng.
+- Phần hàng nhô phía sau nhìn thấy rõ và lớn hơn khoảng 20 cm theo ước lượng trong
+  ảnh.
+- Có bằng chứng trực quan về quan hệ gắn/chở giữa xe và hàng.
+- Có thể đặt box với sai lệch không quá 2 px mỗi cạnh.
+
+Nếu có nhiều xe trong ảnh, xử lý độc lập từng xe. Xe không có hàng nhô không cần
+label chỉ vì nó xuất hiện trong ảnh.
 
 ### IGNORE
 
-Không tạo annotation cho xe không có hàng nhô phía sau; hàng nhô dưới 15 px **và** dưới 12% chiều dài visible box xe; hàng nhô ngang/nhô trước; cửa/cốp/bửng mở; vật chỉ nằm gần xe; vật thể nền; hoặc candidate quá nhỏ, quá mờ hay bị che đến mức không thể xác định quan hệ với xe.
+Không tạo box cho các trường hợp ngoài scope hoặc thiếu bằng chứng. `IGNORE` được
+thể hiện bằng cách không tạo annotation cho vật thể đó; không dùng class giả và
+không vẽ box bao quanh nền.
 
-Khi bằng chứng không đủ, không suy đoán và không tạo box `Vehicle` hay `Attached_Hazard`.
+Các trường hợp thường `IGNORE` gồm:
 
-![Image 4 - Candidate ngoài scope: IGNORE](../data/guideline-pic/IgnoreTrue.png)
-
-![Image 5 - Cửa mở là ngoài scope: IGNORE](../data/guideline-pic/DoorOpeninig.png)
+- Không có hàng nhô phía sau.
+- Vật thể chỉ nằm trong khoang xe.
+- Không chắc vật thể là hàng hóa gắn với xe hay là vật thể nền.
+- Không thể tách phần hàng khỏi thân xe hoặc không xác định được xe cha.
 
 ## 6. Visibility / occlusion
 
-- Bị che một phần: chỉ label nếu vẫn nhận biết rõ hàng gắn phía sau xe; box chỉ theo phần nhìn thấy.
-- Bị cắt mép ảnh: label nếu phần nhìn thấy đủ xác định object và quan hệ với xe; box dừng ở mép ảnh.
-- Quá nhỏ, mờ, ngược sáng hoặc không phân biệt được boundary: `IGNORE`.
-- Chỉ xuất hiện qua gương/kính hoặc phản chiếu: `IGNORE`.
+Chỉ annotate khi phần xe, phần hàng và quan hệ giữa chúng có đủ bằng chứng trực
+quan.
 
-![Image 6 - Hazard bị che: chỉ label nếu quan hệ với xe vẫn rõ](../data/guideline-pic/hazardHidden.png)
-
-![Image 7 - Candidate quá nhỏ: IGNORE](../data/guideline-pic/hazardSuperLittle.png)
-
-![Image 8 - Ảnh tối hoặc mờ, không đủ bằng chứng: IGNORE](../data/guideline-pic/blur-Dark.png)
+- Bị che một phần: vẫn label nếu đường biên còn lại đủ rõ để xác định vật thể và
+  đặt box hợp lý. Box vẫn theo phạm vi nhìn thấy, không suy đoán phần khuất.
+- Bị cắt bởi mép ảnh: label phần nhìn thấy nếu xe cha và hàng nhô vẫn nhận diện
+  được; box dừng tại mép ảnh.
+- Xa, quá nhỏ, mờ, loá, phản chiếu hoặc bị bóng tối che đến mức không phân biệt
+  được: `IGNORE`, không cố đoán.
+- Khi hàng bị che nhưng phần gắn vào xe vẫn không thể xác nhận, `IGNORE` thay vì
+  tạo `Attached_Hazard` dựa trên suy luận.
+- Không dùng màu sắc, bóng đổ hoặc phản chiếu đơn thuần làm bằng chứng cho một
+  hàng hóa.
 
 ## 7. Ambiguity / escalation
 
-### LABEL
+### Quyết định mặc định
 
-Tạo `Vehicle` và `Attached_Hazard`, nhóm các shape cùng xe trong CVAT, rồi gán `Parent_ID` trên `Attached_Hazard`.
+- `LABEL`: đủ bằng chứng, tạo đúng hai class và điền `Parent_ID`.
+- `IGNORE`: ngoài scope hoặc bằng chứng không đủ; không tạo box.
+- `ESCALATE`: case có ảnh hưởng đến quy tắc chung hoặc QA/Lead cần chốt, nhưng
+  annotator không thể tự quyết định nhất quán.
 
-### IGNORE
+Không dùng `UNKNOWN` cho class hoặc `Parent_ID`. Nếu chưa xác định được xe cha,
+không tạo `Attached_Hazard`.
 
-Không tạo box khi candidate ngoài scope hoặc bằng chứng không đủ. Đây là tie-breaker mặc định cho ảnh tĩnh, gồm cả trường hợp không xác định được xe cha. Task không có quyết định `UNKNOWN`.
+### Khi nào được ESCALATE
 
-### ESCALATE
+Chỉ tạo Issue trên CVAT bằng **Open an issue** khi:
 
-Chỉ dùng khi QA/Project Lead chủ động chọn một case để thảo luận, không dùng để thay thế quyết định annotation thường ngày. Dùng **Open an issue** trong CVAT, khoanh vùng candidate và ghi:
+- Không rõ vật thể là hàng nhô hay một phần thân xe/cửa/cốp/bửng.
+- Không rõ hàng có gắn với xe hay là vật thể nền phía sau.
+- Có nhiều xe chồng lấn và không xác định được `Parent_ID`.
+- Case có thể làm thay đổi cách áp dụng guideline cho nhiều ảnh khác.
 
-`[Image <sample_id> - Object <id>] Không rõ hàng có gắn với xe hay không vì <lý do>. Đã tạm IGNORE theo guideline.`
+Trước khi escalation, không tạo annotation suy đoán. Nếu case chỉ là một vật thể
+không đủ bằng chứng và không cần QA/Lead thảo luận, áp dụng `IGNORE`.
 
-Annotator không tạo nhãn suy đoán trong lúc chờ QA.
+Mẫu comment Issue:
+
+`[Frame #<n> - Object #<id>] Không rõ <lý do>. Đã IGNORE theo rule bằng chứng không đủ.`
+
+Trong task ảnh tĩnh, `<n>` là số ảnh/frame hiển thị trong CVAT và `<id>` là mã object
+nếu CVAT có hiển thị. QA hoặc Project Lead là người quyết định cuối cùng và đóng
+Issue. Quyết định `LABEL` được thể hiện bằng box/class/`Parent_ID`; quyết định
+`IGNORE` được thể hiện bằng việc không tạo box; `ESCALATE` được thể hiện bằng Issue
+trong CVAT Issue Tracker.
 
 ## 8. Temporal rule
 
-Không áp dụng — task ảnh tĩnh. Không dùng frame trước/sau và không sử dụng track.
+Không áp dụng — task sử dụng ảnh tĩnh, không có chuỗi frame tương ứng và không dùng
+track. Không suy luận chuyển động hoặc quan hệ giữa các ảnh khác nhau.
 
 ## 9. Examples
 
-| Trường hợp | Expected output |
-|---|---|
-| Xe bình thường, không có hàng nhô phía sau | Không tạo annotation |
-| Xe tải chở bó thép nhô rõ phía sau | `Vehicle` + `Attached_Hazard` + `Parent_ID` |
-| Nhiều kiện hàng chồng liền thành một khối phía sau | Một `Attached_Hazard` gộp + `Parent_ID` |
-| Hai khối hàng tách biệt rõ trên cùng xe | Hai `Attached_Hazard` riêng, cùng `Parent_ID` |
-| Hàng nhô ngang xe máy | Không tạo annotation |
-| Ô tô mở cửa hoặc cốp | Không tạo annotation |
-| Vật dài nằm sau xe nhưng không thấy quan hệ gắn | Không tạo annotation; QA có thể mở Issue để thảo luận |
-| Hàng bị che một phần nhưng vẫn xác định rõ là hàng của xe | Label phần nhìn thấy |
-| Candidate quá nhỏ hoặc chỉ là phản chiếu | Không tạo annotation |
+`sample_pack.csv` hiện chưa có sample ID cụ thể. Các ví dụ dưới đây là tình huống
+quy tắc để annotator áp dụng trong calibration và blind test.
+
+| sample_id | Thấy gì | Expected output | Rule áp dụng |
+|---|---|---|---|
+| Chưa có sample ID | Xe tải nhìn thấy rõ, một khối hàng dài nhô phía sau và điểm gắn với thùng xe rõ | Tạo một box `Vehicle` cho thân xe, một box `Attached_Hazard`, `Parent_ID` trỏ về xe | LABEL khi đủ ba bằng chứng trong mục 1 |
+| Chưa có sample ID | Một xe máy chở nhiều kiện hàng chạm nhau, tạo thành một khối liên tục phía sau | Một `Vehicle` và một `Attached_Hazard` gộp toàn bộ khối hàng | Gộp các kiện tạo thành một khối nhô liên tục |
+| Chưa có sample ID | Xe có cốp hoặc bửng mở nhưng không thấy hàng hóa nhô ra | Không tạo annotation | Cốp/bửng mở đơn thuần ngoài scope |
+| Chưa có sample ID | Có vật thể phía sau xe nhưng không biết là hàng gắn với xe hay vật thể nền | Không tạo box; nếu cần QA/Lead chốt thì tạo Issue | Không suy đoán khi quan hệ gắn không rõ |
+| Chưa có sample ID | Hàng nhô nhìn thấy nhưng xe cha bị che hoàn toàn hoặc không nhận diện được | Không tạo `Attached_Hazard` | Hazard phải có xe cha xác định được |
+| Chưa có sample ID | Hai xe chồng lấn, khối hàng có thể thuộc một trong hai xe và không thể phân biệt | Không tạo box suy đoán; tạo Issue nếu là case cần chốt | Thiếu bằng chứng về `Parent_ID` |
 
 ## 10. Common mistakes
 
-1. Gộp thân xe và hàng nhô vào một `Vehicle` box.
-2. Bỏ sót `Attached_Hazard` khi hàng nhô rõ phía sau.
-3. Quên Group shapes, quên gán `Parent_ID`, hoặc gán nhầm hazard sang xe khác.
-4. Box cả nền hoặc không khí thay vì chỉ phần hàng nhìn thấy.
-5. Label cửa mở, hàng nhô ngang hoặc vật thể chỉ nằm gần xe.
-6. Suy đoán phần bị che hoặc phần nằm ngoài mép ảnh.
-7. Dùng thông tin từ frame/ảnh khác.
-8. Tạo `Attached_Hazard` khi không chứng minh được quan hệ với xe.
+- Vẽ một box `Vehicle` bao gồm cả xe và hàng nhô. Luôn tách thân xe và hàng thành
+  hai box riêng.
+- Vẽ `Attached_Hazard` nhưng quên `Parent_ID`. Kiểm tra từng hazard đều trỏ đúng
+  về một `Vehicle` trong cùng ảnh.
+- Vẽ box quá rộng, gồm nền, không khí hoặc khoảng trống giữa xe và hàng. Phóng to
+  ảnh và bám sát biên ngoài vật thể.
+- Dùng một box hazard cho nhiều xe. Mỗi hazard phải thuộc đúng một xe cha.
+- Tạo box cho cửa, cốp, bửng mở, gương, ô/dù hoặc vật nằm trong khoang xe. Đây là
+  các trường hợp ngoài scope.
+- Đánh dấu vật thể nền là hàng hóa chỉ vì nó nằm ngay sau xe. Cần có bằng chứng
+  trực quan về quan hệ gắn/chở.
+- Suy đoán phần bị che, phần nằm ngoài ảnh hoặc phần không nhìn thấy. Geometry là
+  theo phần nhìn thấy, không phải amodal.
+- Tạo `Attached_Hazard` khi không xác định được `Vehicle` cha. Trường hợp này phải
+  `IGNORE` hoặc `ESCALATE`.
+- Tạo nhiều box cho các kiện hàng đã tạo thành một khối liên tục. Khi đó phải gộp
+  thành một box hazard.
+- Gán ID cha không nhất quán. Đánh số xe từ trái sang phải và kiểm tra lại
+  `Parent_ID` trước khi lưu/export.
