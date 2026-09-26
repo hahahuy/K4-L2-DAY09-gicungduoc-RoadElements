@@ -1,1 +1,4 @@
 sample_id,item,values_by_annotator,diagnosis,action,rule_change
+OVH05,attached_hazard side (left|right),thai=left|right; tien=left|right; dinh=left|right,guideline_gap,revise_rule,Bổ sung quy tắc xác định side=left/right cho cửa hé mở nhỏ theo chiều xe di chuyển
+OVH06,vehicle / attached_hazard count,thai=0; tien=0; dinh=0,data_ambiguity,add_example,Thêm ví dụ xe chở hàng bị che khuất phần lớn vào guideline mục 4
+OVH11,attached_hazard side (rear),thai=rear; tien=rear; dinh=rear,guideline_gap,add_escalation,Thêm quy tắc escalation cho ảnh ngược sáng/ban đêm khi không rõ điểm cuối của vật liệu
