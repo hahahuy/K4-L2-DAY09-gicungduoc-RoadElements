@@ -1,1 +1,71 @@
-[]
+[
+  {
+    "name": "vehicle",
+    "color": "#1E88E5",
+    "type": "rectangle",
+    "attributes": [
+      {
+        "name": "vehicle_type",
+        "mutable": false,
+        "input_type": "select",
+        "default_value": "__undefined__",
+        "values": ["__undefined__", "car", "truck", "bus", "motorcycle", "bicycle", "cart", "unknown"]
+      },
+      {
+        "name": "has_hazard",
+        "mutable": false,
+        "input_type": "checkbox",
+        "default_value": "false",
+        "values": ["false"]
+      },
+      {
+        "name": "occluded",
+        "mutable": false,
+        "input_type": "checkbox",
+        "default_value": "false",
+        "values": ["false"]
+      },
+      {
+        "name": "truncated",
+        "mutable": false,
+        "input_type": "checkbox",
+        "default_value": "false",
+        "values": ["false"]
+      }
+    ]
+  },
+  {
+    "name": "attached_hazard",
+    "color": "#E53935",
+    "type": "rectangle",
+    "attributes": [
+      {
+        "name": "hazard_type",
+        "mutable": false,
+        "input_type": "select",
+        "default_value": "__undefined__",
+        "values": ["__undefined__", "protruding_load", "oversized_cargo", "open_door", "other"]
+      },
+      {
+        "name": "side",
+        "mutable": false,
+        "input_type": "select",
+        "default_value": "__undefined__",
+        "values": ["__undefined__", "front", "rear", "left", "right"]
+      },
+      {
+        "name": "needs_review",
+        "mutable": false,
+        "input_type": "checkbox",
+        "default_value": "false",
+        "values": ["false"]
+      }
+    ]
+  },
+  {
+    "name": "image_escalate",
+    "color": "#8E24AA",
+    "type": "tag",
+    "attributes": []
+  }
+]
