@@ -1,1 +1,11 @@
 sample_id,decision_id,expected,severity,rationale
+OVH12,d1,"vehicle car has_hazard=true cho ô tô đỗ ven đường; box theo thân xe cửa đóng",major,"§3 box xe chuẩn"
+OVH12,d2,"attached_hazard open_door side=left cùng Group với ô tô d1",major,"§4 side theo thân xe; §5 Group"
+OVH12,d3,"geometry: box ô tô không bao gồm cánh cửa mở, lệch ≤3 px mỗi cạnh",minor,"§3; §10 lỗi geometry"
+OVH13,d1,"attached_hazard oversized_cargo cùng Group với đúng xe máy chở hàng cồng kềnh, không gắn nhầm xe bên cạnh",major,"§5 liên kết đúng xe chở hàng"
+OVH13,d2,"vehicle motorcycle has_hazard=true cho xe máy chở thùng hàng cồng kềnh",major,"§3 box xe máy chuẩn"
+OVH14,d1,"attached_hazard protruding_load, needs_review=true (hàng thò ra bị xe khác che một phần, không thấy điểm xa nhất)",major,"§6 xử lý che khuất"
+OVH14,d2,"vehicle truck has_hazard=true cho xe tải chở hàng bị che",minor,"§3 định danh xe tải"
+OVH15,d1,"có attached_hazard protruding_load side=rear cho vật liệu thò sau xe tải ngay phía trước trong làn xe mình",critical,"Bỏ sót hazard trực tiếp trong làn là failure critical"
+OVH15,d2,"vehicle truck has_hazard=true và box xe KHÔNG bao gồm phần vật liệu thò ra phía sau",critical,"Box phình làm sai khoảng cách an toàn"
+OVH16,d1,"ESCALATE: attached_hazard có needs_review=true hoặc ảnh có tag image_escalate",major,"§7 hàng sát ngưỡng mép xe"
