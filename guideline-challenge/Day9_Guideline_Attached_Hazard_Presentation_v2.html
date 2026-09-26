@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Day 9 - Rear Cargo Overhang Guideline</title>
+  <style>
+    :root { --ink:#10213c; --muted:#60708a; --paper:#f6f8fb; --navy:#102846; --blue:#1d75d0; --red:#d94747; --green:#17865f; --amber:#c47d13; --line:#d8e0ea; }
+    * { box-sizing:border-box; }
+    html, body { margin:0; min-height:100%; font-family:Inter, "Segoe UI", Arial, sans-serif; color:var(--ink); background:#dfe6ee; }
+    header { position:fixed; z-index:5; inset:0 0 auto; height:58px; display:flex; align-items:center; justify-content:space-between; padding:0 30px; color:white; background:var(--navy); }
+    .brand { font-weight:800; letter-spacing:.08em; font-size:13px; }
+    .meta { color:#c5d4e8; font-size:13px; }
+    main { margin:58px auto 0; max-width:1280px; }
+    .slide { min-height:calc(100vh - 58px); padding:58px 72px; display:grid; align-content:center; gap:28px; background:var(--paper); border-bottom:8px solid #dfe6ee; }
+    .slide.dark { color:white; background:linear-gradient(140deg, #102846, #173c66); }
+    .eyebrow { margin:0; color:var(--blue); font-size:13px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
+    .dark .eyebrow { color:#80b7f1; }
+    h1, h2, h3, p { margin:0; }
+    h1 { max-width:820px; font-size:clamp(44px, 6vw, 78px); line-height:1; letter-spacing:-.045em; }
+    h2 { max-width:1000px; font-size:clamp(30px, 4vw, 52px); line-height:1.06; letter-spacing:-.035em; }
+    h3 { font-size:19px; line-height:1.25; }
+    p, li { font-size:18px; line-height:1.5; }
+    .lead { max-width:820px; font-size:25px; color:var(--muted); }
+    .dark .lead { color:#d0deed; }
+    .grid2, .grid3 { display:grid; gap:20px; }
+    .grid2 { grid-template-columns:repeat(2, minmax(0,1fr)); }
+    .grid3 { grid-template-columns:repeat(3, minmax(0,1fr)); }
+    .card { padding:23px; border:1px solid var(--line); border-radius:18px; background:white; }
+    .dark .card { color:#10213c; }
+    .card.blue { border-top:6px solid var(--blue); }
+    .card.red { border-top:6px solid var(--red); }
+    .card.green { border-top:6px solid var(--green); }
+    .card.amber { border-top:6px solid var(--amber); }
+    ul, ol { margin:10px 0 0; padding-left:1.25em; }
+    li + li { margin-top:8px; }
+    .rule { padding:25px 30px; border-left:8px solid var(--red); border-radius:10px; background:#fff4f3; font-size:24px; font-weight:750; line-height:1.35; }
+    .dark .rule { color:#10213c; }
+    .tag { display:inline-block; padding:4px 9px; border-radius:6px; font:700 16px ui-monospace, SFMono-Regular, Menlo, monospace; color:white; background:var(--blue); }
+    .tag.hazard { background:var(--red); }
+    .tag.ignore { background:var(--muted); }
+    .tag.escalate { background:var(--amber); }
+    .image-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:20px; }
+    figure { margin:0; overflow:hidden; border:1px solid var(--line); border-radius:16px; background:white; }
+    figure img { display:block; width:100%; max-height:420px; object-fit:contain; background:#edf1f5; }
+    figcaption { padding:11px 14px; color:var(--muted); font-size:14px; line-height:1.35; }
+    .decision { display:grid; grid-template-columns:160px 1fr; overflow:hidden; border:1px solid var(--line); border-radius:15px; background:white; }
+    .decision > div { padding:16px 18px; border-bottom:1px solid var(--line); }
+    .decision > div:nth-last-child(-n+2) { border-bottom:0; }
+    .decision .head { color:white; font-weight:800; background:var(--navy); }
+    .checklist { counter-reset:step; }
+    .checklist li { list-style:none; position:relative; padding-left:46px; }
+    .checklist li::before { counter-increment:step; content:counter(step); position:absolute; left:0; top:0; width:28px; height:28px; display:grid; place-items:center; border-radius:50%; color:white; background:var(--blue); font-size:14px; font-weight:800; }
+    .footer { color:var(--muted); font-size:14px; }
+    @media (max-width:760px) { header { padding:0 16px; } .meta { display:none; } .slide { min-height:auto; padding:42px 22px; } .grid2, .grid3, .image-grid { grid-template-columns:1fr; } .decision { grid-template-columns:1fr; } .decision .head { display:none; } p, li { font-size:16px; } }
+    @media print { header { display:none; } main { margin:0; } .slide { min-height:100vh; break-after:page; border:0; } }
+  </style>
+</head>
+<body>
+  <header><div class="brand">DAY 9 · ROAD ELEMENTS</div><div class="meta">Rear Cargo Overhang · Annotation Guideline v1</div></header>
+  <main>
+    <section class="slide dark">
+      <p class="eyebrow">Annotation guideline</p>
+      <h1>Hàng hóa nhô phía sau xe</h1>
+      <p class="lead">Một task hẹp: nhận diện phần hàng/vật liệu chở trên xe và nhô rõ phía sau thân xe trong ảnh dashcam tĩnh.</p>
+      <div class="rule">Không gộp thân xe và hàng nhô vào một box. Luôn tách <span class="tag">Vehicle</span> và <span class="tag hazard">Attached_Hazard</span>.</div>
+    </section>
+
+    <section class="slide">
+      <p class="eyebrow">1 · Objective + scope</p>
+      <h2>Tại sao tách hai box?</h2>
+      <div class="grid2">
+        <article class="card blue"><h3>Perception và distance estimation</h3><p><span class="tag">Vehicle</span> chỉ biểu diễn thân xe chuẩn để mô hình không học sai kích thước xe.</p></article>
+        <article class="card red"><h3>Motion planning và collision avoidance</h3><p><span class="tag hazard">Attached_Hazard</span> biểu diễn vùng không gian bị chiếm thêm ở phía sau xe.</p></article>
+      </div>
+      <figure><img src="data/Team-generate/ChatGPT%20Image%20Sep%2026%2C%202026%2C%2011_31_19%20AM.png" alt="Ví dụ hàng hóa nhô phía sau xe"><figcaption>Positive case: chỉ tách hazard khi phần hàng và quan hệ với xe cha nhìn thấy rõ.</figcaption></figure>
+    </section>
+
+    <section class="slide">
+      <p class="eyebrow">1 · Downstream users</p>
+      <h2>Ai dùng annotation này, và họ cần gì?</h2>
+      <div class="grid2">
+        <article class="card blue"><h3>Nhóm Perception</h3><p>3D object detection và depth estimation dùng box <span class="tag">Vehicle</span> ôm sát thân xe chuẩn để ước lượng đúng kích thước xe và khoảng cách từ camera.</p><p class="footer">Nếu box Vehicle nuốt cả hàng nhô, mô hình có thể suy ra sai kích thước và khoảng cách xe.</p></article>
+        <article class="card red"><h3>Nhóm Motion Planning</h3><p>Obstacle avoidance dùng <span class="tag hazard">Attached_Hazard</span> để biết vùng không gian bị chiếm thực tế phía sau xe, đặc biệt khi xe tự lái bám đuôi.</p><p class="footer">Nếu bỏ sót hazard, hệ thống có thể coi vùng nguy hiểm là khoảng trống và va chạm.</p></article>
+      </div>
+      <div class="grid3">
+        <article class="card blue"><h3>Output 1</h3><p><code>Vehicle</code>: thân xe gốc, không bao hàng nhô.</p></article>
+        <article class="card red"><h3>Output 2</h3><p><code>Attached_Hazard</code>: phần hàng nhô nhìn thấy phía sau.</p></article>
+        <article class="card amber"><h3>Output 3</h3><p><code>Parent_ID</code>: cho biết hazard di chuyển cùng xe nào, không phải vật cản tĩnh.</p></article>
+      </div>
+      <div class="rule">Ba lỗi quan trọng cần tránh: bỏ sót hazard, gộp hàng vào box xe, và gán sai hoặc thiếu <code>Parent_ID</code>.</div>
+    </section>
+
+    <section class="slide">
+      <p class="eyebrow">1 · Classes and attributes</p>
+      <h2>Chỉ điền hai class và một attribute bắt buộc</h2>
+      <div class="grid2">
+        <article class="card blue"><h3><span class="tag">Vehicle</span></h3><p><b>Geometry:</b> Rectangle.</p><p>Box ôm thân xe gốc nhìn thấy. Chỉ tạo khi xe có ít nhất một <code>Attached_Hazard</code> hợp lệ.</p><p class="footer">Không có vehicle type, occlusion, truncated hoặc attribute bổ sung.</p></article>
+        <article class="card red"><h3><span class="tag hazard">Attached_Hazard</span></h3><p><b>Geometry:</b> Rectangle.</p><p>Box ôm phần hàng/vật liệu nhìn thấy nhô phía sau xe, không bao thân xe.</p><p class="footer">Không có hazard type, direction, certainty hay needs_review.</p></article>
+      </div>
+      <article class="card amber"><h3><code>Parent_ID</code> trên mỗi <code>Attached_Hazard</code></h3><p>Đây là attribute bắt buộc. Điền ID của <code>Vehicle</code> đang chở/gắn khối hàng đó. Nếu một xe có nhiều hazard, tất cả hazard phải dùng cùng <code>Parent_ID</code>.</p><p>Trong CVAT, dùng <b>Group shapes</b> để nhóm Vehicle và các hazard cùng xe, sau đó kiểm tra group có đúng trước khi lưu.</p></article>
+      <div class="rule">Không xác định được xe cha thì không thể điền <code>Parent_ID</code> đúng: <span class="tag ignore">IGNORE</span>, không tạo Attached_Hazard mồ côi.</div>
+    </section>
+
+    <section class="slide">
+      <p class="eyebrow">1 · Scope boundary</p>
+      <h2>Chỉ label rear cargo overhang</h2>
+      <div class="grid2">
+        <article class="card green"><h3>Trong scope</h3><ul><li>Hàng cồng kềnh hoặc vật liệu dài được chở/gắn trên ô tô, xe tải hoặc xe máy.</li><li>Phần hàng nhô phía sau thân xe, ước lượng trên 20 cm.</li><li>Nhìn thấy xe cha, phần hàng và quan hệ giữa chúng.</li></ul></article>
+        <article class="card amber"><h3>Ngoài scope: IGNORE</h3><ul><li>Cốp/bửng mở, hàng nhô dọc hoặc phía trước.</li><li>Ô/dù, gương, cản, bánh xe và hàng nằm gọn trong xe.</li><li>Vật thể nền, vật chỉ ở gần xe, bóng và phản chiếu.</li></ul></article>
+      </div>
+      <div class="image-grid"><figure><img src="data/guideline-pic/IgnoreTrue.png" alt="Ví dụ cần ignore"><figcaption>Candidate không thỏa scope: <span class="tag ignore">IGNORE</span>.</figcaption></figure><figure><img src="data/guideline-pic/DoorOpeninig.png" alt="Cửa xe mở"><figcaption>Cửa mở là ngoài scope hiện tại: <span class="tag ignore">IGNORE</span>.</figcaption></figure></div>
+    </section>
+
+    <section class="slide">
+      <p class="eyebrow">2 · Annotation unit</p>
+      <h2>Một xe cha, một hoặc nhiều khối hàng phía sau</h2>
+      <div class="grid3">
+        <article class="card blue"><h3>Vehicle</h3><p>Chỉ tạo cho xe có ít nhất một hazard hợp lệ.</p></article>
+        <article class="card red"><h3>Attached_Hazard</h3><p>Một cụm hàng liên tục/chồng liền nhau là một box hazard.</p></article>
+        <article class="card green"><h3>Nhiều khối tách biệt</h3><p>Tạo box riêng nếu từng khối cùng thỏa scope và đều nhô phía sau.</p></article>
+      </div>
+      <figure><img src="data/guideline-pic/2hazard.png" alt="Hai hazard cùng xe"><figcaption>Các hazard của cùng xe phải có cùng <code>Parent_ID</code> và được Group shapes để kiểm tra trực quan.</figcaption></figure>
+    </section>
+
+    <section class="slide">
+      <p class="eyebrow">3 · Geometry</p>
+      <h2>Visible bounding box, không suy đoán</h2>
+      <div class="grid2">
+        <article class="card blue"><h3>Box <code>Vehicle</code></h3><ul><li>Ôm cabin/thùng xe tiêu chuẩn đang nhìn thấy.</li><li>Không gồm hàng nhô, nền thừa hoặc phần che hoàn toàn.</li><li>Bỏ qua gương, cản và bánh xe.</li></ul></article>
+        <article class="card red"><h3>Box <code>Attached_Hazard</code></h3><ul><li>Ôm phần hàng nhìn thấy vượt phía sau xe.</li><li>Không gồm thân xe hoặc nền.</li><li>Nếu bị cắt ở mép ảnh, box dừng tại mép ảnh.</li></ul></article>
+      </div>
+      <figure><img src="data/guideline-pic/exampleGoodLabel.png" alt="Ví dụ geometry đúng"><figcaption>Không kéo box <code>Vehicle</code> để bao toàn bộ hàng nhô. Tolerance: lệch tối đa 2 px mỗi cạnh.</figcaption></figure>
+    </section>
+
+    <section class="slide">
+      <p class="eyebrow">4 · Threshold and parent relation</p>
+      <h2>Ba điều kiện để LABEL</h2>
+      <ol class="checklist">
+        <li>Nhìn thấy xe cha xác định được.</li>
+        <li>Hàng/vật liệu nhô sau xe trên 20 cm; trong ảnh tĩnh, phần nhô đạt ít nhất 15 px <strong>hoặc</strong> 12% chiều dài visible box của xe theo trục trước-sau.</li>
+        <li>Có bằng chứng trực quan rõ ràng hàng thuộc xe đó.</li>
+      </ol>
+      <div class="rule">Mỗi <span class="tag hazard">Attached_Hazard</span> bắt buộc có <code>Parent_ID</code> của <span class="tag">Vehicle</span>. Không xác định được xe cha thì không tạo hazard.</div>
+    </section>
+
+    <section class="slide">
+      <p class="eyebrow">4 · CVAT workflow</p>
+      <h2>Liên kết đúng trước khi lưu</h2>
+      <div class="grid2">
+        <article class="card blue"><h3>Thao tác bắt buộc</h3><ol><li>Vẽ box `Vehicle`.</li><li>Vẽ box `Attached_Hazard`.</li><li>Gán `Parent_ID` của xe cha lên hazard.</li><li>Dùng <b>Group shapes</b> để nhóm các shape thuộc cùng xe và kiểm tra trực quan.</li></ol></article>
+        <article class="card red"><h3>Lỗi cần tránh</h3><ul><li>Hazard không có parent.</li><li>Gán parent của xe khác.</li><li>Gộp vehicle và hazard thành một box.</li><li>Tạo vehicle cho xe không có hazard hợp lệ.</li></ul></article>
+      </div>
+    </section>
+
+    <section class="slide">
+      <p class="eyebrow">5-7 · Decision rule</p>
+      <h2>Không đủ bằng chứng thì IGNORE</h2>
+      <div class="decision"><div class="head">Decision</div><div class="head">Thao tác trong CVAT</div><div><span class="tag">LABEL</span></div><div>Tạo `Vehicle` + `Attached_Hazard`, gán `Parent_ID`, và Group shapes.</div><div><span class="tag ignore">IGNORE</span></div><div>Không tạo box cho case ngoài scope, dưới cả hai ngưỡng, hoặc không xác định được parent.</div><div><span class="tag escalate">ESCALATE</span></div><div>Chỉ khi QA/Lead chủ động cần thảo luận: tạo Issue, khoanh candidate và ghi đã tạm IGNORE theo guideline.</div></div>
+      <p class="footer">Không có decision `UNKNOWN`, `needs_review`, `hazard_type`, `side` hay `image_escalate` trong task này.</p>
+    </section>
+
+    <section class="slide">
+      <p class="eyebrow">6 · Visibility / occlusion</p>
+      <h2>Chỉ label phần nhìn thấy khi relation vẫn rõ</h2>
+      <div class="image-grid"><figure><img src="data/guideline-pic/hazardHidden.png" alt="Hazard bị che một phần"><figcaption>Bị che một phần: LABEL phần nhìn thấy chỉ khi vẫn xác định rõ hàng thuộc xe.</figcaption></figure><figure><img src="data/guideline-pic/hazardSuperLittle.png" alt="Hazard quá nhỏ"><figcaption>Quá nhỏ, quá mờ hoặc không rõ boundary: <span class="tag ignore">IGNORE</span>.</figcaption></figure></div>
+      <figure><img src="data/guideline-pic/blur-Dark.png" alt="Ảnh tối và mờ"><figcaption>Ảnh tối/ngược sáng: không đoán relation giữa hàng và xe; bằng chứng không đủ thì IGNORE.</figcaption></figure>
+    </section>
+
+    <section class="slide">
+      <p class="eyebrow">8-10 · Before export</p>
+      <h2>Checklist cuối cùng</h2>
+      <div class="grid2"><article class="card green"><h3>Cho mỗi positive case</h3><ul><li>Đúng rear overhang, không phải cửa/hàng ngang.</li><li>Vehicle và hazard tách box theo visible boundary.</li><li>Hazard vượt ngưỡng 15 px hoặc 12%.</li><li>`Parent_ID` đúng xe cha và Group shapes đúng.</li></ul></article><article class="card amber"><h3>Khi gặp case khó</h3><ul><li>Không dùng frame khác: đây là ảnh tĩnh.</li><li>Không suy đoán vùng bị che hoặc ngoài mép ảnh.</li><li>Không rõ parent hoặc relation: IGNORE.</li><li>Chỉ mở CVAT Issue khi QA/Lead yêu cầu trao đổi case.</li></ul></article></div>
+      <div class="rule">Rule nhớ nhanh: <strong>rõ xe cha + rõ hàng nhô sau + rõ quan hệ</strong> thì LABEL. Thiếu một trong ba thì IGNORE.</div>
+    </section>
+  </main>
+</body>
+</html>

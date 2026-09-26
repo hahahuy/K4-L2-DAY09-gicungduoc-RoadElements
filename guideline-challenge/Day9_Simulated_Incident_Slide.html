@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simulated Near-Miss - Rear Cargo Overhang</title>
+  <style>
+    :root { --navy:#102846; --blue:#1d75d0; --red:#d94747; --green:#17865f; --amber:#d68b1c; --ink:#14233b; --muted:#62718a; --paper:#f6f8fb; --line:#d7e0ea; }
+    * { box-sizing:border-box; }
+    html, body { margin:0; min-height:100%; font-family:Inter,"Segoe UI",Arial,sans-serif; background:#dfe6ee; color:var(--ink); }
+    main { width:min(1600px,100vw); min-height:900px; margin:auto; padding:48px 62px; display:grid; grid-template-rows:auto 1fr auto; gap:24px; background:var(--paper); }
+    .eyebrow { margin:0 0 8px; color:var(--blue); font-size:14px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
+    h1,h2,h3,p { margin:0; } h1 { font-size:clamp(34px,4vw,58px); line-height:1.05; letter-spacing:-.04em; } h2 { font-size:21px; } h3 { font-size:18px; }
+    .subtitle { margin-top:12px; color:var(--muted); font-size:20px; line-height:1.42; }
+    .layout { display:grid; grid-template-columns:38% 62%; gap:26px; min-height:0; }
+    .story, .diagram-panel { border:1px solid var(--line); border-radius:20px; background:#fff; overflow:hidden; }
+    .story { display:grid; align-content:start; gap:16px; padding:25px; }
+    .alert { padding:16px; border-left:6px solid var(--red); border-radius:10px; background:#fff4f3; }
+    .alert h2 { color:#9e2929; } .alert p { margin-top:6px; line-height:1.45; }
+    .flow { display:grid; gap:11px; } .step { display:grid; grid-template-columns:34px 1fr; gap:10px; align-items:start; }
+    .num { width:28px; height:28px; display:grid; place-items:center; border-radius:50%; color:#fff; background:var(--navy); font-size:13px; font-weight:800; }
+    .step p { color:var(--muted); font-size:16px; line-height:1.4; }
+    .handoff { padding:16px; border-radius:12px; color:#fff; background:var(--navy); }
+    .handoff p { margin-top:7px; color:#d6e4f4; line-height:1.4; }
+    .diagram-panel { padding:18px; display:grid; grid-template-rows:auto 1fr auto; gap:13px; }
+    .diagram-title { display:flex; align-items:center; justify-content:space-between; gap:14px; }
+    .legend { display:flex; gap:9px; flex-wrap:wrap; font-size:13px; color:var(--muted); }
+    .legend span { display:inline-flex; gap:5px; align-items:center; } .dot { width:11px; height:11px; border-radius:3px; background:var(--blue); } .dot.red { background:var(--red); } .dot.green { background:var(--green); }
+    svg { width:100%; height:100%; min-height:410px; border-radius:13px; background:linear-gradient(#dbeaf6 0 41%,#7f8991 41% 100%); }
+    .comparison { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .case { padding:12px; border-radius:12px; border:1px solid var(--line); background:#f9fbfd; font-size:14px; line-height:1.35; }
+    .case b { display:block; margin-bottom:4px; } .case.bad b { color:var(--red); } .case.warn b { color:var(--amber); } .case.good { background:#f1fbf6; border-color:#b9e3cf; } .case.good b { color:var(--green); }
+    .bottom { display:grid; grid-template-columns:1fr auto; gap:22px; align-items:center; padding:18px 22px; border-radius:16px; color:#fff; background:var(--navy); }
+    .bottom p { margin-top:5px; color:#cedbeb; } .outputs { display:flex; gap:10px; flex-wrap:wrap; }
+    .tag { padding:8px 11px; border-radius:8px; color:#fff; background:var(--blue); font:700 14px ui-monospace,SFMono-Regular,Menlo,monospace; } .tag.hazard { background:var(--red); } .tag.parent { background:var(--amber); }
+    @media (max-width:900px) { main { min-height:100vh; padding:30px 20px; } .layout { grid-template-columns:1fr; } .comparison { grid-template-columns:1fr; } .bottom { grid-template-columns:1fr; } svg { min-height:330px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">Roleplay · Motion Planning Team gửi yêu cầu</p>
+      <h1>Near-miss khi xe tự hành bám đuôi xe tải chở thanh sắt</h1>
+      <p class="subtitle">Một sự cố giả lập giải thích vì sao team annotation cần tách thân xe khỏi hàng hóa nhô phía sau.</p>
+    </header>
+
+    <section class="layout">
+      <article class="story">
+        <div class="alert"><h2>Sự cố giả lập</h2><p>Xe tự hành bám đuôi xe tải. Perception nhận ra xe tải, nhưng không có annotation riêng cho thanh sắt nhô sau thùng xe.</p></div>
+        <div class="flow">
+          <div class="step"><div class="num">1</div><div><h3>Planner tính khoảng cách theo thân xe</h3><p>Khoảng trống ngay sau thùng xe bị hiểu là vùng có thể đi vào.</p></div></div>
+          <div class="step"><div class="num">2</div><div><h3>Xe tải giảm tốc</h3><p>Thanh sắt nhô sau vẫn chiếm không gian, nhưng collision zone chưa được mở rộng.</p></div></div>
+          <div class="step"><div class="num">3</div><div><h3>Near-miss</h3><p>Xe tự hành phanh gấp; nếu phản ứng muộn hơn, thanh sắt có thể va chạm với xe ego.</p></div></div>
+        </div>
+        <div class="handoff"><h2>Nhiệm vụ giao cho Annotation Team</h2><p>Trong mỗi positive case, tách thân xe và phần hàng nhô, rồi chỉ rõ phần hàng đó di chuyển cùng xe nào.</p></div>
+      </article>
+
+      <article class="diagram-panel">
+        <div class="diagram-title"><h2>Vùng va chạm thay đổi theo annotation</h2><div class="legend"><span><i class="dot"></i>Vehicle</span><span><i class="dot red"></i>Attached_Hazard</span><span><i class="dot green"></i>Collision zone đúng</span></div></div>
+        <svg viewBox="0 0 1000 520" role="img" aria-label="Sơ đồ xe tự hành bám sau xe tải với thanh sắt nhô phía sau">
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#14233b"/></marker>
+            <pattern id="road" width="110" height="40" patternUnits="userSpaceOnUse"><rect width="48" height="7" x="30" y="18" fill="#f9fbfd" opacity=".9"/></pattern>
+          </defs>
+          <rect x="0" y="220" width="1000" height="300" fill="#68737c"/>
+          <rect x="0" y="360" width="1000" height="60" fill="url(#road)"/>
+          <text x="40" y="70" fill="#14233b" font-size="24" font-weight="800">Camera POV / ego vehicle follows truck</text>
+          <path d="M180 307 C320 287, 445 287, 560 307" fill="none" stroke="#17865f" stroke-width="88" opacity=".26" stroke-dasharray="10 8"/>
+          <text x="252" y="267" fill="#147050" font-size="19" font-weight="800">collision zone phải tính cả thanh sắt</text>
+          <g transform="translate(92 304)">
+            <rect x="0" y="26" width="150" height="82" rx="12" fill="#3e80bf" stroke="#14233b" stroke-width="5"/>
+            <rect x="27" y="0" width="96" height="56" rx="13" fill="#91bce0" stroke="#14233b" stroke-width="5"/>
+            <circle cx="30" cy="112" r="17" fill="#18232d"/><circle cx="119" cy="112" r="17" fill="#18232d"/>
+            <text x="22" y="155" fill="#fff" font-size="18" font-weight="700">EGO VEHICLE</text>
+          </g>
+          <g transform="translate(580 246)">
+            <rect x="0" y="38" width="220" height="136" rx="9" fill="#dfe5e9" stroke="#27313b" stroke-width="6"/>
+            <rect x="24" y="0" width="88" height="174" rx="10" fill="#b4c0c8" stroke="#27313b" stroke-width="6"/>
+            <circle cx="47" cy="184" r="23" fill="#19232b"/><circle cx="178" cy="184" r="23" fill="#19232b"/>
+            <g stroke="#9a7131" stroke-width="12" stroke-linecap="round"><line x1="210" y1="82" x2="360" y2="76"/><line x1="210" y1="101" x2="370" y2="98"/><line x1="210" y1="120" x2="350" y2="123"/></g>
+            <rect x="-7" y="-8" width="235" height="192" rx="10" fill="none" stroke="#1d75d0" stroke-width="6" stroke-dasharray="12 8"/>
+            <rect x="210" y="61" width="165" height="80" rx="8" fill="none" stroke="#d94747" stroke-width="6" stroke-dasharray="12 8"/>
+            <text x="8" y="-18" fill="#1d75d0" font-size="18" font-weight="800">Vehicle</text>
+            <text x="225" y="51" fill="#c83737" font-size="18" font-weight="800">Attached_Hazard</text>
+          </g>
+          <path d="M245 354 L555 354" stroke="#14233b" stroke-width="3" marker-end="url(#arrow)"/>
+          <text x="315" y="340" fill="#14233b" font-size="18" font-weight="700">Khoảng cách planner đánh giá</text>
+        </svg>
+        <div class="comparison">
+          <div class="case bad"><b>1. Bỏ sót hazard</b>Planner coi vùng sau thùng xe là trống. Đây là critical false negative.</div>
+          <div class="case warn"><b>2. Gộp vào Vehicle</b>Box xe phình to, làm perception/depth estimation học sai kích thước xe.</div>
+          <div class="case good"><b>3. Output đúng</b>`Vehicle` + `Attached_Hazard` + `Parent_ID` giúp planner mở rộng vùng tránh va chạm.</div>
+        </div>
+      </article>
+    </section>
+
+    <footer class="bottom">
+      <div><h2>Output cần bàn giao</h2><p>Chỉ label khi nhìn rõ xe cha, hàng nhô phía sau và quan hệ giữa chúng. Nếu thiếu bằng chứng: IGNORE.</p></div>
+      <div class="outputs"><span class="tag">Vehicle</span><span class="tag hazard">Attached_Hazard</span><span class="tag parent">Parent_ID</span></div>
+    </footer>
+  </main>
+</body>
+</html>
