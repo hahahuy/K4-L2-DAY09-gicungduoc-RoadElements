@@ -11,7 +11,7 @@
 | 1.1 | Điền tên nhóm (ví dụ `team07`) | [00_team.md](file:///d:/vinai-thuc-chien/lab/day9/K4-L2-DAY09-gicungduoc-RoadElements/guideline-challenge/project/00_team.md) L5 | ✅ | gicungduoc |
 | 1.2 | Điền nhóm peer test bài mình | [00_team.md](file:///d:/vinai-thuc-chien/lab/day9/K4-L2-DAY09-gicungduoc-RoadElements/guideline-challenge/project/00_team.md) L6 | ✅ | tự tìm |
 | 1.3 | Điền nhóm mình test bài | [00_team.md](file:///d:/vinai-thuc-chien/lab/day9/K4-L2-DAY09-gicungduoc-RoadElements/guideline-challenge/project/00_team.md) L7 | ✅ | tự tìm |
-| 1.4 | Điền GitHub username 5 thành viên | [00_team.md](file:///d:/vinai-thuc-chien/lab/day9/K4-L2-DAY09-gicungduoc-RoadElements/guideline-challenge/project/00_team.md) L13–17 | 🔲 | Mỗi thành viên tự điền |
+| 1.4 | Điền GitHub username 5 thành viên | [00_team.md](file:///d:/vinai-thuc-chien/lab/day9/K4-L2-DAY09-gicungduoc-RoadElements/guideline-challenge/project/00_team.md) L13–17 | ✅ | Đã điền đủ 5 GitHub username |
 | 1.5 | Problem statement + downstream contract | [01_problem_statement.md](file:///d:/vinai-thuc-chien/lab/day9/K4-L2-DAY09-gicungduoc-RoadElements/guideline-challenge/project/01_problem_statement.md) | ✅ | Đã viết đầy đủ 4 câu |
 
 ---
@@ -38,7 +38,7 @@
 | 3.5 | Ghi nguồn ảnh vào ATTRIBUTION.txt | `ATTRIBUTION.txt` | ✅ | Ảnh do AI tạo |
 | 3.6 | `make pack SPLIT=calibration` gom ảnh | `build/calibration/` | ✅ | Xong (có 7 ảnh) |
 | 3.7 | Tạo task calibration trên CVAT | CVAT localhost:8080 | ✅ | Hoàn thành chạy trên CVAT Local |
-| 3.8 | Dán `03_cvat_labels.json` vào task (tab Raw) | CVAT | ✅ | Có các 3 label chính : vehicle, hazard_type và image_escalate |
+| 3.8 | Dán `03_cvat_labels.json` vào task (tab Raw) | CVAT | ✅ | Đủ 3 label: vehicle, attached_hazard, image_escalate |
 | 3.9 | Dán `02_guideline.md` vào Guide của task | CVAT | ✅ | Thêm tại Task Description của Task  |
 | 3.10 | **Điền phiên bản CVAT** | [03_ontology_and_cvat_setup.md](file:///d:/vinai-thuc-chien/lab/day9/K4-L2-DAY09-gicungduoc-RoadElements/guideline-challenge/project/03_ontology_and_cvat_setup.md) L34 | ✅ | CVAT 2.74.1 tại http://localhost:8080 |
 | 3.11 | **Điền tên task calibration** | [03_ontology_and_cvat_setup.md](file:///d:/vinai-thuc-chien/lab/day9/K4-L2-DAY09-gicungduoc-RoadElements/guideline-challenge/project/03_ontology_and_cvat_setup.md) L35 | 🔲 | Ví dụ `gicungduoc-calib-v1-tien` |
