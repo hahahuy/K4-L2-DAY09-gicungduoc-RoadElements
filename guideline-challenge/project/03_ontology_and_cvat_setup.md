@@ -41,4 +41,4 @@ Bảng ontology là **source of truth** cho schema CVAT: `03_cvat_labels.json` p
 Một thành viên **chưa tham gia setup** mở task và trả lời: label gì, dùng tool nào, gán attribute nào, cách Group,
 khi nào escalate. Ghi lại ai test và chỗ họ vấp:
 
-Ví dụ: "Hoàng Quang Thái gặp vướng mắc thì sau khi đọc guideline thì quyết định không gán cửa xe mở vì hàng hóa bên trong không lớn."
+Ví dụ: "Hoàng Quang Thái gặp vướng mắc thì sau khi đọc guideline => Quyết định không gán cửa xe mở vì hàng hóa bên trong không lớn."
