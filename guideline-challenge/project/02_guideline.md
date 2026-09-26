@@ -1,135 +1,122 @@
-# Annotation guideline — Rear cargo overhang
+# Annotation guideline — Traffic light state và ego relevance
 
-**Version:** v1
+**Version:** v2
+
+Peer chỉ nhận file này. Rule không viết ở đây thì không tồn tại. Ảnh ví dụ gọi bằng `sample_id` trong catalog (`BDD02`, `LISA16`, …).
 
 ## 1. Objective + scope
 
-Phát hiện hàng hóa cồng kềnh hoặc vật liệu dài nhô rõ phía sau phương tiện trong ảnh dashcam. Tách phần hàng nhô khỏi thân xe để giữ box xe phục vụ ước lượng khoảng cách và biểu diễn vùng va chạm phía sau xe.
+Annotation này cho planner biết **xe ego phải dừng hay được đi**. Vì vậy mỗi đầu đèn cần ba thứ cùng lúc: màu bóng đang sáng (`state`), kiểu mặt đèn (`direction`), và đèn đó có điều khiển **đúng đường ego đang đi** hay không (`relevance`).
 
-[../data/Team-generate/ChatGPT Image Sep 26, 2026, 11_31_19 AM.png]
+Trong scope: mọi đầu đèn giao thông có vỏ nhìn thấy. Ngoài scope: đèn phanh, xi-nhan, đèn đường, biển quảng cáo, biển tên phố, đèn hiệu cửa hàng, phản chiếu trên mặt đường.
 
-Chỉ label hàng hóa/vật liệu được gắn, buộc hoặc chở trên ô tô, xe tải hoặc xe máy và nhô phía sau thân xe, ước lượng trên 20 cm. Với ảnh tĩnh, dùng ngưỡng nhìn thấy thay thế: phần nhô dài ít nhất 15 px **hoặc** ít nhất 12% chiều dài visible box của xe theo trục trước--sau. Chỉ label khi nhìn rõ xe gốc, phần hàng nhô và quan hệ giữa chúng.
-
-Ngoài scope: cửa/cốp/bửng mở, vật nhô sang hai bên hoặc phía trước, ô/dù, gương/cản/bánh xe bình thường, hàng nằm hoàn toàn trong xe, người đi bộ, vật thể trên đường, vật thể nền, bóng và phản chiếu.
+Ego mặc định **đi thẳng trên làn hiện tại**. Chỉ coi ego đang rẽ khi vạch làn trong ảnh cho thấy xe đang ở làn rẽ.
 
 ## 2. Annotation unit
 
-Task là ảnh tĩnh. Mỗi ảnh được xử lý độc lập; không tracking và không dùng thông tin từ ảnh/frame khác.
-
-Chỉ tạo annotation cho phương tiện có hàng nhô phía sau: một `Vehicle` cho thân xe gốc và một `Attached_Hazard` cho khối hàng nhô. Cụm kiện hàng liên tục hoặc chồng liền nhau được gộp thành một `Attached_Hazard`. Các khối tách biệt rõ ràng được tạo box riêng và dùng cùng `Parent_ID`.
+- Một ảnh tĩnh = một đơn vị. Không suy `state` từ ảnh khác.
+- **Một đầu đèn vật lý = một rectangle** `traffic_light`. Hai bóng trên cùng một vỏ dọc là một đầu đèn, không phải hai box.
+- Đèn người đi bộ là một đầu đèn riêng (`direction=pedestrian`), không gộp với đèn xe cạnh nó.
+- Tag `image_escalate` gắn cho cả ảnh, không gắn cho từng đèn.
 
 ## 3. Geometry rule
 
-Sử dụng visible rectangle/bounding box.
+Công cụ: **Rectangle**, chế độ **Shape** (pack này là ảnh rời, không phải video).
 
-### `Vehicle`
+- Box ôm **vỏ đèn nhìn thấy**, gồm lưỡi che nếu dính liền vỏ.
+- Không gồm cột, tay đòn ngang, dây điện, hay biển gắn cạnh đèn.
+- Bị che: ôm phần vỏ còn thấy, không vẽ nốt phần khuất.
+- Nhiều đầu đèn trên cùng một tay đòn: **mỗi đầu một box**, các box không chồng lên nhau quá 20% diện tích.
+- Ngưỡng kích thước: nếu chiều cao box ôm vừa vỏ **dưới 8 px** thì không vẽ (coi là chấm màu, không phải đầu đèn). Từ 8 px trở lên thì vẽ, dù không đọc được màu.
 
-- Ôm sát thân xe gốc nhìn thấy, gồm cabin/thùng xe tiêu chuẩn.
-- Không bao gồm hàng hóa nhô phía sau, nền thừa hoặc phần bị che hoàn toàn.
-- Bỏ qua các chi tiết tiêu chuẩn như gương, cản và bánh xe; các chi tiết này không làm mở rộng box xe.
-
-### `Attached_Hazard`
-
-- Ôm sát phần hàng nhô nhìn thấy phía sau xe.
-- Nếu một phần hàng nằm trong thân xe, chỉ box phần vượt ra ngoài boundary thông thường của xe.
-- Không bao gồm thân xe hoặc nền. Nếu bị cắt mép ảnh, box dừng tại mép ảnh.
-
-Sai lệch tối đa 2 px mỗi cạnh ở ảnh gốc được chấp nhận. Không gộp `Vehicle` và `Attached_Hazard` thành một box lớn.
-
-![Image 2 - Tách Vehicle và Attached_Hazard](../data/guideline-pic/exampleGoodLabel.png)
+Tolerance: mỗi cạnh lệch tối đa 3 px so với vỏ. Box kéo dài xuống cột là sai, dù attribute đúng.
 
 ## 4. Taxonomy
 
-### `Vehicle`
+Class: `traffic_light` (rectangle), `image_escalate` (tag). Mọi dropdown mặc định `__undefined__`. Còn `__undefined__` trong export là chưa gán, tính là lỗi. Checkbox `needs_review` mặc định tắt; chỉ bật khi mục 7 bảo bật.
 
-Rectangle cho thân xe gốc. Chỉ tạo khi xe có ít nhất một `Attached_Hazard` hợp lệ.
+| Label | Attribute | Giá trị | Chọn khi |
+|---|---|---|---|
+| `traffic_light` | `state` | `red`, `yellow`, `green`, `off`, `unknown` | Màu **bóng đang sáng** của đúng đầu đèn này. Không có bóng sáng nhưng vỏ rõ: `off`. Thấy vỏ mà không đọc được màu: `unknown` |
+| | `direction` | `round`, `left`, `right`, `straight`, `pedestrian`, `unknown` | Hình trên mặt đèn. Đèn tròn không mũi tên = `round`. Mũi tên trái/phải/thẳng = `left` / `right` / `straight`. Không thấy mặt đèn: `unknown` |
+| | `relevance` | `ego`, `cross`, `unknown` | `ego` chỉ khi đầu đèn điều khiển đúng chuyển động ego đang đi. `cross` khi điều khiển đường cắt ngang, làn rẽ mà ego không ở trong đó, hoặc người đi bộ. Không đủ bằng chứng: `unknown` |
+| | `needs_review` | checkbox | Bật đúng các dòng mục 7 ghi ESCALATE. Không bật "cho chắc" trên ca đã rõ |
+| `image_escalate` | (không attribute) | tag cả ảnh | Khi **quá nửa** số đầu đèn đạt ngưỡng 8 px có `state=unknown` |
 
-### `Attached_Hazard`
-
-Rectangle cho hàng hóa/vật liệu nhô phía sau. Không có subtype hoặc direction vì scope đã cố định là rear cargo overhang.
-
-### `Parent_ID`
-
-`Attached_Hazard` bắt buộc có attribute `Parent_ID`: ID của `Vehicle` mà hàng gắn hoặc được chở trên đó. Trong CVAT, nhóm `Vehicle` và các `Attached_Hazard` cùng xe bằng **Group shapes** để kiểm tra trực quan liên kết; mọi hazard trong một group phải có cùng `Parent_ID` của xe cha.
-
-Không có `Attached_Hazard` không liên kết: nếu không xác định được xe cha, `IGNORE` candidate đó và không tạo box hazard.
-
-![Image 3 - Hai Attached_Hazard cùng một xe](../data/guideline-pic/2hazard.png)
-
-Không sử dụng `UNKNOWN`, `certainty`, `hazard_type`, `review_region` hoặc attribute ngoài contract này.
+`state` để `mutable=true` vì cùng một đầu đèn đổi màu giữa các frame. Ba attribute kia cố định trên một đầu đèn.
 
 ## 5. Inclusion / exclusion
 
-### LABEL
+**Vẽ `traffic_light` khi tất cả đều đúng:**
 
-Tạo `Vehicle` và `Attached_Hazard` khi đồng thời có xe gốc xác định được, hàng/vật liệu nhô rõ phía sau trên 20 cm, đạt ngưỡng nhìn thấy ở mục 1, và bằng chứng trực quan đủ cho thấy hàng thuộc xe đó. Nhóm các shape cùng xe trong CVAT và gán `Parent_ID` trước khi hoàn tất.
+1. Nhìn thấy vỏ đèn (hình chữ nhật tối, thường 3 khoang dọc hoặc ngang), không chỉ một chấm sáng.
+2. Chiều cao vỏ quy về box ≥ 8 px.
+3. Gán đủ `state`, `direction`, `relevance`. Hết `__undefined__`.
 
-### IGNORE
+**Không vẽ:**
 
-Không tạo annotation cho xe không có hàng nhô phía sau; hàng nhô dưới 15 px **và** dưới 12% chiều dài visible box xe; hàng nhô ngang/nhô trước; cửa/cốp/bửng mở; vật chỉ nằm gần xe; vật thể nền; hoặc candidate quá nhỏ, quá mờ hay bị che đến mức không thể xác định quan hệ với xe.
+- Đèn hậu, đèn phanh, xi-nhan, đèn trên nóc taxi.
+- Đèn cao áp, đèn đường, đèn cửa sổ, biển sáng của cửa hàng.
+- Biển báo (kể cả biển vàng hình thoi, biển tên phố, biển xanh chỉ đường).
+- Phản chiếu đèn trên mặt đường ướt hoặc trên nắp capo.
+- Chấm xanh/đỏ xa không tách được vỏ, box sẽ thấp hơn 8 px.
+- Bóng đèn người đi bộ dạng icon rời không có vỏ 3 khoang: vẫn vẽ **nếu** đó là đầu đèn người đi bộ có vỏ; icon vẽ trên biển hoặc trên cửa hàng thì không vẽ.
 
-Khi bằng chứng không đủ, không suy đoán và không tạo box `Vehicle` hay `Attached_Hazard`.
-
-![Image 4 - Candidate ngoài scope: IGNORE](../data/guideline-pic/IgnoreTrue.png)
-
-![Image 5 - Cửa mở là ngoài scope: IGNORE](../data/guideline-pic/DoorOpeninig.png)
+Đèn người đi bộ có vỏ: vẽ, `direction=pedestrian`, `relevance=cross` (không điều khiển xe ego).
 
 ## 6. Visibility / occlusion
 
-- Bị che một phần: chỉ label nếu vẫn nhận biết rõ hàng gắn phía sau xe; box chỉ theo phần nhìn thấy.
-- Bị cắt mép ảnh: label nếu phần nhìn thấy đủ xác định object và quan hệ với xe; box dừng ở mép ảnh.
-- Quá nhỏ, mờ, ngược sáng hoặc không phân biệt được boundary: `IGNORE`.
-- Chỉ xuất hiện qua gương/kính hoặc phản chiếu: `IGNORE`.
-
-![Image 6 - Hazard bị che: chỉ label nếu quan hệ với xe vẫn rõ](../data/guideline-pic/hazardHidden.png)
-
-![Image 7 - Candidate quá nhỏ: IGNORE](../data/guideline-pic/hazardSuperLittle.png)
-
-![Image 8 - Ảnh tối hoặc mờ, không đủ bằng chứng: IGNORE](../data/guideline-pic/blur-Dark.png)
+- Che một phần, vẫn thấy vỏ và thấy màu: vẽ phần vỏ còn lại, gán `state` theo bóng thấy, không bật `needs_review`.
+- Thấy vỏ, không thấy bóng nào sáng và không đủ tối để kết luận đèn tắt: `state=unknown`, bật `needs_review`.
+- Thấy vỏ, rõ ràng không bóng nào sáng (đèn tắt): `state=off`, không bật `needs_review`.
+- Mưa, đêm, ngược sáng: vẫn vẽ từng đầu đèn đọc được. Không lấy màu từ đầu đèn bên cạnh. `LISA16` là ca mẫu: mũi tên trái đỏ trong khi hai đầu đèn cạnh đã xanh — ba `state` khác nhau là đúng.
+- Không thấy mặt đèn hướng về phía nào (chỉ thấy cạnh hoặc chấm sáng trong đêm): `relevance=unknown`, `direction=unknown`, bật `needs_review`.
 
 ## 7. Ambiguity / escalation
 
-### LABEL
+Quy tắc relevance, áp dụng theo thứ tự, dừng ở dòng đầu tiên khớp:
 
-Tạo `Vehicle` và `Attached_Hazard`, nhóm các shape cùng xe trong CVAT, rồi gán `Parent_ID` trên `Attached_Hazard`.
+1. Không chắc vỏ đèn hay chỉ là chấm sáng / phản chiếu → không vẽ (IGNORE).
+2. `direction=pedestrian` → `relevance=cross`.
+3. Mũi tên (`left`, `right`, `straight`) và ego **không** ở làn của mũi tên đó → `relevance=cross`.
+4. Mũi tên và ego đang ở đúng làn đó, mặt đèn hướng về camera → `relevance=ego`.
+5. Đèn `round` hoặc `straight`, mặt hướng về camera, gắn trên lối ego đang đi (trên đầu làn hoặc góc đường phía trước ego) → `relevance=ego`.
+6. Đèn quay mặt sang đường vuông góc, hoặc nhìn nghiêng rõ là của đường cắt ngang → `relevance=cross`.
+7. Còn lại → `relevance=unknown` và bật `needs_review`. **Cấm mặc định `ego`.**
 
-### IGNORE
-
-Không tạo box khi candidate ngoài scope hoặc bằng chứng không đủ. Đây là tie-breaker mặc định cho ảnh tĩnh, gồm cả trường hợp không xác định được xe cha. Task không có quyết định `UNKNOWN`.
-
-### ESCALATE
-
-Chỉ dùng khi QA/Project Lead chủ động chọn một case để thảo luận, không dùng để thay thế quyết định annotation thường ngày. Dùng **Open an issue** trong CVAT, khoanh vùng candidate và ghi:
-
-`[Image <sample_id> - Object <id>] Không rõ hàng có gắn với xe hay không vì <lý do>. Đã tạm IGNORE theo guideline.`
-
-Annotator không tạo nhãn suy đoán trong lúc chờ QA.
+| Tình huống | Quyết định | Trong CVAT |
+|---|---|---|
+| Đọc được màu, vỏ ≥ 8 px, relevance chốt được bằng 1–6 | LABEL | box + đủ attribute, `needs_review` tắt |
+| Vỏ ≥ 8 px nhưng không đọc được màu | ESCALATE object | vẽ, `state=unknown`, `needs_review` bật |
+| Không chốt được relevance (dòng 7) | ESCALATE object | vẽ, `relevance=unknown`, `needs_review` bật |
+| Chấm sáng không có vỏ, hoặc phản chiếu mặt đường | IGNORE | không có box |
+| Quá nửa đầu đèn ≥ 8 px có `state=unknown` | ESCALATE ảnh | tag `image_escalate`, vẫn giữ các box đọc được |
+| Ảnh không có đầu đèn | IGNORE cả ảnh | không box, không tag |
 
 ## 8. Temporal rule
 
-Không áp dụng — task ảnh tĩnh. Không dùng frame trước/sau và không sử dụng track.
+Pack nộp dùng **Shape**, mỗi ảnh một quyết định. Nếu sau này dựng clip LISA thành task video thì chuyển sang **Track**, một đầu đèn một track, và chỉ `state` được đổi theo frame (`mutable`).
+
+Khi hai frame LISA cùng nằm trong pack (ví dụ `LISA01` và `LISA16`): đó vẫn là hai ảnh. `state` của frame này không được chép sang frame kia. Cùng một gantry có thể đỏ hết ở frame trước và xanh một phần ở frame sau.
+
+Không nội suy "đèn sắp xanh". Không thấy bóng sáng thì `unknown` hoặc `off`, không đoán theo xe khác đang chạy.
 
 ## 9. Examples
 
-| Trường hợp | Expected output |
-|---|---|
-| Xe bình thường, không có hàng nhô phía sau | Không tạo annotation |
-| Xe tải chở bó thép nhô rõ phía sau | `Vehicle` + `Attached_Hazard` + `Parent_ID` |
-| Nhiều kiện hàng chồng liền thành một khối phía sau | Một `Attached_Hazard` gộp + `Parent_ID` |
-| Hai khối hàng tách biệt rõ trên cùng xe | Hai `Attached_Hazard` riêng, cùng `Parent_ID` |
-| Hàng nhô ngang xe máy | Không tạo annotation |
-| Ô tô mở cửa hoặc cốp | Không tạo annotation |
-| Vật dài nằm sau xe nhưng không thấy quan hệ gắn | Không tạo annotation; QA có thể mở Issue để thảo luận |
-| Hàng bị che một phần nhưng vẫn xác định rõ là hàng của xe | Label phần nhìn thấy |
-| Candidate quá nhỏ hoặc chỉ là phản chiếu | Không tạo annotation |
+| sample_id | Thấy gì | Expected output | Rule |
+|---|---|---|---|
+| `LISA16` | Ba đầu đèn lớn: mũi tên trái còn đỏ; đèn giữa và đèn phải đã xanh | Ba box. Trái: `state=red`, `direction=left`. Giữa và phải: `state=green`, `direction=round`. Ego đi vào ngã tư không nằm trong làn rẽ trái → trái `relevance=cross`; hai đèn tròn đối diện lối đi thẳng `relevance=ego`. Không tag | §4 state từng đầu; §7 dòng 3 và 5 |
+| `BDD15` | Cao tốc, không vỏ đèn; chỉ có xe và biển xanh | Không box, không tag | §5 negative |
+| `BDD26` | Đêm, một đèn xanh gần bên trái nhìn rõ vỏ; một đèn đỏ nhỏ xa hơn không thấy hướng mặt | Đèn xanh: `state=green`, `direction=round`, `relevance=ego` nếu mặt hướng về lối ego, ngược lại `unknown` + `needs_review`. Đèn đỏ nếu không thấy hướng mặt: `state=red`, `relevance=unknown`, `needs_review` bật. Không vẽ đèn đường | §6 đêm; §7 dòng 7 |
+| `BDD09` | Cao tốc ban ngày, đèn hậu xe phía trước, không có vỏ đèn | Không box, không tag. Đèn hậu không phải `traffic_light` | §5 exclusion |
 
 ## 10. Common mistakes
 
-1. Gộp thân xe và hàng nhô vào một `Vehicle` box.
-2. Bỏ sót `Attached_Hazard` khi hàng nhô rõ phía sau.
-3. Quên Group shapes, quên gán `Parent_ID`, hoặc gán nhầm hazard sang xe khác.
-4. Box cả nền hoặc không khí thay vì chỉ phần hàng nhìn thấy.
-5. Label cửa mở, hàng nhô ngang hoặc vật thể chỉ nằm gần xe.
-6. Suy đoán phần bị che hoặc phần nằm ngoài mép ảnh.
-7. Dùng thông tin từ frame/ảnh khác.
-8. Tạo `Attached_Hazard` khi không chứng minh được quan hệ với xe.
+1. Một box bao cả tay đòn và mọi đầu đèn trên đó. Mỗi đầu đèn một box.
+2. Box kéo dài theo cột. Box chỉ cao bằng vỏ.
+3. Gán `state` theo đầu đèn bên cạnh. `LISA16` chứng minh các đầu đèn trên cùng gantry có thể khác màu.
+4. Thấy đèn đỏ là gán `relevance=ego`. Đèn đỏ của đường cắt ngang không bắt ego dừng.
+5. Vẽ phản chiếu trên đường ướt, đèn phanh, hoặc biển sáng.
+6. Đèn dưới 8 px vẫn vẽ, hoặc đèn đọc được vỏ nhưng bỏ vì "xa".
+7. Để `__undefined__`. Quét bằng **Attribute annotation** trước khi lưu.
+8. Bật `image_escalate` chỉ vì trời mưa, trong khi các vỏ đèn vẫn đọc được màu. Tag chỉ khi quá nửa số đầu đèn ≥ 8 px có `state=unknown`.
